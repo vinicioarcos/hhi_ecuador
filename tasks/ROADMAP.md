@@ -22,8 +22,6 @@
 
 ## Fase 4 — Extensión
 - [x] Adaptar a Ecuador: VAB por rama de actividad (ISIC, 7 ramas) desde UNSD National Accounts; corrige el sesgo de piso 1/3 de la versión de 3 sectores.
-- [x] Probar HHI por ramas económicas (resultado corregido: moderadamente diversificado, HHI 0.18–0.24).
+- [x] Probar HHI por ramas económicas (resultado corregido: moderadamente diversificado, HHI 0.18-0.24).
 - [ ] Probar DEA por años, provincias o sectores.
 - [ ] Preparar artículo Quarto.
-
-
