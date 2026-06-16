@@ -1,4 +1,6 @@
 import argparse
+from pathlib import Path
+
 import pandas as pd
 import numpy as np
 from scipy.optimize import linprog
@@ -78,7 +80,6 @@ def main() -> None:
         raise ValueError("DEA requires at least one input and one output column.")
 
     out = dea_ccr_input_oriented(df, args.dmu_col, input_cols, output_cols)
-    Path = __import__("pathlib").Path
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     out.to_csv(args.output, index=False)
     print(out.to_string(index=False))

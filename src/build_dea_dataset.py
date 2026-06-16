@@ -2,6 +2,11 @@ import argparse
 from pathlib import Path
 import pandas as pd
 
+try:
+    from config import DATA_RAW, DATA_PROCESSED
+except ImportError:
+    from .config import DATA_RAW, DATA_PROCESSED
+
 # Define mapping from WDI series name to DEA input/output name
 COLUMN_MAPPING = {
     "year": "factor",
@@ -22,9 +27,9 @@ COLUMN_MAPPING = {
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build DEA dataset from raw WDI data.")
-    parser.add_argument("--input", default="data/raw/wdi/wdi_uae_2000_2020.csv",
+    parser.add_argument("--input", default=str(DATA_RAW / "wdi" / "wdi_uae_2000_2020.csv"),
                         help="Path to the raw WDI CSV file.")
-    parser.add_argument("--output", default="data/processed/dea_input.csv",
+    parser.add_argument("--output", default=str(DATA_PROCESSED / "dea_input.csv"),
                         help="Path to save the processed DEA CSV file.")
     args = parser.parse_args()
 

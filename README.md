@@ -52,30 +52,48 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-## Flujo mínimo
+## Procedencia de los datos
 
-Primero calcula/valida HHI con los valores publicados:
+El proyecto combina datos de **dos universos** distintos. Es importante no
+mezclarlos:
+
+| Origen | Archivo | Fuente | Se usa para |
+|---|---|---|---|
+| **Paper (UAE)** | `data/raw/hhi/gfcf_sector_template.csv` | KAPSARC / FCSC (←Bayanat 2020), GFCF por 18 sectores, AED corrientes | Recalcular el HHI |
+| **Paper (UAE)** | `data/processed/hhi_values_from_paper_table3.csv` | Valores **publicados** en la Tabla 3 de Siddiqui & Afzal (2022) | Validar la réplica |
+| **Paper (UAE)** | `data/raw/wdi/wdi_uae_2000_2020.csv` | World Bank WDI, 2000–2020 | DEA CCR (pilares de economía del conocimiento) |
+| **Extensión (Ecuador)** | descarga en vivo | UNSD National Accounts Main Aggregates, VAB por 7 ramas ISIC | HHI de Ecuador |
+
+La comparación recalculado-vs-publicado se materializa en
+`outputs/tables/hhi_replication_comparison.csv` (lo genera `src/compare_hhi.py`).
+
+## Flujo completo
+
+Todo el pipeline está orquestado en el `Makefile` y respeta el orden de
+dependencias:
 
 ```bash
-python src/hhi.py --paper-table
+make all        # hhi -> dea -> ecuador -> report
 ```
 
-Luego genera figuras:
+O por etapas:
 
 ```bash
-python src/visualize.py
+make data       # descarga KAPSARC + WDI (requiere internet)
+make hhi        # HHI UAE desde datos primarios + comparación contra el paper + figura
+make dea        # construye dataset WDI y corre los modelos DEA CCR
+make ecuador    # extensión Ecuador (descarga UNSD, requiere internet)
+make report     # renderiza el reporte Quarto (HTML + PDF Typst)
+make test       # pruebas
 ```
 
-Para DEA con datos propios:
+Ejecución manual equivalente de las piezas clave:
 
 ```bash
-python src/dea_ccr.py --input data/processed/dea_input.csv --output outputs/tables/dea_efficiency.csv
-```
-
-Para renderizar el reporte final en HTML y PDF:
-
-```bash
-quarto render
+python src/hhi.py --input data/raw/hhi/gfcf_sector_template.csv   # HHI UAE
+python src/compare_hhi.py                                         # validación vs Tabla 3
+python src/run_dea_analysis.py                                    # DEA CCR (4 modelos)
+quarto render                                                     # reporte final
 ```
 
 El PDF usa el formato Typst de Quarto, por lo que no requiere una instalación de LaTeX/TinyTeX.
@@ -97,4 +115,3 @@ year, sector, gross_fixed_capital_formation_million_aed
 ## Extensión sugerida para Ecuador
 
 La misma arquitectura puede adaptarse a Ecuador usando cuentas nacionales por rama de actividad del BCE, exportaciones por producto o empleo por rama ENEMDU. El HHI se mantiene igual; cambia la fuente y la unidad de análisis.
-# hhi_ecuador

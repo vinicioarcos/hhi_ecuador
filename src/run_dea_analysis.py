@@ -23,6 +23,7 @@ import pandas as pd
 
 sys.path.append(str(Path(__file__).resolve().parent))
 from dea_ccr import dea_ccr_input_oriented
+from config import DATA_PROCESSED, TABLES
 
 # Cada modelo declara inputs/outputs. Los modelos VALIDOS respetan la regla de
 # adecuacion; "Table2_Macro_Degenerate" se conserva a proposito para demostrar
@@ -80,13 +81,13 @@ MODELS = {
 
 
 def main() -> None:
-    input_file = Path("data/processed/dea_input.csv")
+    input_file = DATA_PROCESSED / "dea_input.csv"
     if not input_file.exists():
         print(f"Error: {input_file} no existe. Ejecute build_dea_dataset.py primero.")
         sys.exit(1)
 
     df = pd.read_csv(input_file)
-    output_dir = Path("outputs/tables")
+    output_dir = TABLES
     output_dir.mkdir(parents=True, exist_ok=True)
 
     summary = []
