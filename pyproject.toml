@@ -1,0 +1,25 @@
+[project]
+name = "replica-afzal-2021-uae"
+version = "0.1.0"
+description = "Replication and extension of sectoral diversification analysis for the UAE and Ecuador."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "matplotlib>=3.8",
+    "scipy>=1.12",
+    "requests>=2.31",
+    "pyyaml>=6.0",
+    "jupyter>=1.0",
+    "openpyxl",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

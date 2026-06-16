@@ -1,8 +1,12 @@
+import os
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+os.environ.setdefault("MPLCONFIGDIR", str(ROOT / ".matplotlib"))
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
-ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "processed" / "hhi_values_from_paper_table3.csv"
 FIGURES = ROOT / "outputs" / "figures"
 

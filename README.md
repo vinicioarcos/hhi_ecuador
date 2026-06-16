@@ -72,6 +72,14 @@ Para DEA con datos propios:
 python src/dea_ccr.py --input data/processed/dea_input.csv --output outputs/tables/dea_efficiency.csv
 ```
 
+Para renderizar el reporte final en HTML y PDF:
+
+```bash
+quarto render
+```
+
+El PDF usa el formato Typst de Quarto, por lo que no requiere una instalación de LaTeX/TinyTeX.
+
 ## Dato importante
 
 La carpeta incluye una plantilla para cargar los datos de formación bruta de capital fijo por sector. No inventa los datos sectoriales originales. Eso sería cocina econométrica con humo, y aquí no vendemos parrilladas.

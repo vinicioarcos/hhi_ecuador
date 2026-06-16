@@ -1,121 +1,177 @@
 ---
-title: "Replication Report: Sectoral Diversification of UAE toward a Knowledge-Based Economy"
+title: "Replication and Extension of Sectoral Diversification in the UAE"
+subtitle: "HHI, DEA CCR, and an Ecuador Extension"
 author: "Econ. Vinicio Arcos"
 format:
   html:
     toc: true
     toc-depth: 3
-  pdf:
+    number-sections: true
+    embed-resources: true
+  typst:
     toc: true
+    number-sections: true
 execute:
-  echo: true
+  echo: false
   warning: false
   message: false
 ---
 
-# Objetivo
-
-Este reporte replica el cálculo HHI y prepara la estructura para replicar el DEA del paper de Siddiqui y Afzal.
-
-# Fórmula HHI
-
 ```{python}
 import pandas as pd
-hhi = pd.read_csv("../data/processed/hhi_values_from_paper_table3.csv")
-hhi
 ```
 
-# Figura HHI
+# Abstract
+
+This report replicates and extends the empirical strategy of Siddiqui and Afzal's study of sectoral diversification in the United Arab Emirates. The replication has two components. First, it recomputes the Herfindahl-Hirschman Index (HHI) for gross fixed capital formation by sector and compares the results with the values published in the original paper. Second, it audits the paper's DEA CCR efficiency exercise and shows that the reported universal efficiency result is consistent with an underpowered DEA design rather than clear evidence of uniformly efficient knowledge-economy pillars.
+
+The extension applies the same diversification logic to Ecuador using value added by ISIC branch. A key methodological correction is to avoid overly aggregated three-sector HHI measures, because they impose a theoretical floor of 1/3 and mechanically classify many economies as highly concentrated. With seven mutually exclusive branches, Ecuador appears moderately diversified over 2000-2024.
+
+# Research Design
+
+The original article combines descriptive knowledge-economy indicators, an HHI measure of sectoral diversification, and DEA CCR efficiency analysis. This replication keeps those three layers but separates the tasks more explicitly:
+
+1. HHI is treated as the main reproducible diversification measure.
+2. DEA is treated as a diagnostic exercise whose validity depends on the number of decision-making units (DMUs) relative to inputs and outputs.
+3. The Ecuador extension tests whether the same HHI logic remains informative when the unit of analysis changes from UAE fixed capital formation to Ecuadorian value added by branch.
+
+# Data
+
+For the UAE HHI replication, the project uses gross fixed capital formation by 18 sectors for 2010-2017. The published HHI values from Table 3 are stored separately from the recomputed values so that the replication comparison is transparent.
+
+For the UAE DEA exercise, the project uses World Development Indicators for 2000-2020. The DEA dataset is built as a year-level panel where each year is a DMU. Variables are explicitly named as `input_*` and `output_*`, which keeps the DEA specification inspectable.
+
+For Ecuador, the extension uses the UNSD National Accounts Main Aggregates dataset, specifically value added by ISIC branches. The branch set is mutually exclusive:
+
+- Agriculture, forestry and fishing
+- Mining and utilities
+- Manufacturing
+- Construction
+- Trade, restaurants and hotels
+- Transport and communication
+- Other activities
+
+# Methodology
+
+## HHI
+
+The HHI is computed by year as:
+
+$$
+HHI_t = \sum_i \left(\frac{X_{it}}{X_t}\right)^2
+$$
+
+where \(X_{it}\) is the value for sector or branch \(i\) in year \(t\), and \(X_t\) is the total across all sectors or branches in that year.
+
+The classification follows the thresholds used in the source paper:
+
+- `HHI < 0.15`: diversified
+- `0.15 <= HHI < 0.25`: moderately diversified
+- `HHI >= 0.25`: least diversified
+
+## DEA CCR
+
+The project implements an input-oriented CCR DEA model. For each DMU \(o\), the optimization problem minimizes \(\theta\), subject to:
+
+$$
+X\lambda \leq \theta x_o,\quad Y\lambda \geq y_o,\quad \lambda \geq 0
+$$
+
+An efficiency score of 1 indicates that the DMU lies on the frontier. However, DEA frontier results are fragile when there are too few DMUs relative to model dimensions. This replication uses the adequacy rule:
+
+$$
+n_{DMU} \geq 3(m+s)
+$$
+
+where \(m\) is the number of inputs and \(s\) is the number of outputs. Models below that threshold are classified as under-specified.
+
+# UAE HHI Replication
 
 ```{python}
-import matplotlib.pyplot as plt
-plt.figure()
-plt.plot(hhi["year"], hhi["hhi_paper"], marker="o")
-plt.xlabel("Year")
-plt.ylabel("HHI")
-plt.title("HHI values from published Table 3")
-plt.show()
+hhi_cmp = pd.read_csv("../outputs/tables/hhi_replication_comparison.csv")
+hhi_cmp
 ```
 
-# Interpretación de HHI
-
-Los valores publicados caen en el rango de economía moderadamente diversificada (HHI entre 0.15 y 0.25), aunque se observa una tendencia al alza a partir del 2011, lo que sugiere una menor diversificación sectorial relativa en términos de acumulación de capital fijo hacia el final del periodo (2015-2017).
-
-# Análisis DEA (Data Envelopment Analysis)
-
-Implementamos DEA CCR orientado a entradas (*input-oriented*) sobre los indicadores WDI de EAU. El paper original reporta eficiencias de **exactamente 1.0** para sus pilares. Mostramos que ese resultado es un **artefacto de falta de poder discriminante** y proponemos un rediseño metodológicamente válido.
-
-## Regla de adecuación de DMUs
-
-Siguiendo a Cooper, Seiford y Tone (2007), un modelo DEA discrimina solo si el número de unidades de decisión (DMU) supera holgadamente la suma de dimensiones:
-
-$$n_{DMU} \geq \max\big(m \cdot s,\; 3(m+s)\big)$$
-
-donde $m$ = inputs y $s$ = outputs. Con DMU = año, elegimos ventanas y variables de cobertura completa que satisfagan el umbral $3(m+s)$.
+The recomputed UAE HHI closely matches the published Table 3 values. In seven of eight years, the absolute difference is no greater than 0.00033. The largest difference occurs in 2017, where the recomputed value is 0.2468 and the published value is 0.2445. This difference does not alter the classification: every year remains in the moderately diversified range.
 
 ```{python}
-import pandas as pd
-summary = pd.read_csv("../outputs/tables/dea_models_summary.csv")
-summary
+max_diff = hhi_cmp["abs_diff"].max()
+mean_diff = hhi_cmp["abs_diff"].mean()
+pd.DataFrame({
+    "metric": ["Maximum absolute difference", "Mean absolute difference"],
+    "value": [round(max_diff, 5), round(mean_diff, 5)]
+})
 ```
 
-## Modelos válidos
+The UAE results therefore support the descriptive finding that the country was moderately diversified in terms of fixed capital formation over 2010-2017, with values close to the upper bound of the moderate-diversification interval.
 
-**1. Difusión de conocimiento vía TIC** (2010–2020, n=11): infraestructura TIC → usuarios de internet y artículos científicos.
+# UAE DEA Audit
 
 ```{python}
-pd.read_csv("../outputs/tables/dea_results_ict_knowledge_diffusion.csv")
+dea_summary = pd.read_csv("../outputs/tables/dea_models_summary.csv")
+dea_summary
 ```
 
-**2. Innovación → PIB** (2010–2020, n=11): solicitudes de patentes (residentes y no residentes) → PIB constante.
-
-```{python}
-pd.read_csv("../outputs/tables/dea_results_innovation_to_gdp.csv")
-```
-
-**3. Eficiencia de diversificación** (2000–2020, n=21): menor dependencia de exportaciones de combustibles con mayores resultados de conocimiento.
-
-```{python}
-pd.read_csv("../outputs/tables/dea_results_diversification_efficiency.csv")
-```
-
-## Réplica del diseño del paper (degenerado)
-
-El modelo macro del paper (Tabla 2: 3 inputs + 4 outputs) solo tiene datos completos 2015–2020 (n=6), muy por debajo del umbral $3(7)=21$.
+The DEA audit is the main methodological contribution of the replication. The design closest to the original paper uses three inputs and four outputs but has only six complete annual DMUs. Its adequacy threshold is 21 DMUs. The model is therefore heavily under-specified.
 
 ```{python}
 pd.read_csv("../outputs/tables/dea_results_table2_macro_degenerate.csv")
 ```
 
-# Discusión Metodológica y Limitaciones
+The under-specified model classifies all six years as efficient. This reproduces the paper's substantive pattern of universal efficiency, but the result is better interpreted as a lack of discriminatory power than as robust evidence that all pillars operate efficiently.
 
-El hallazgo central de esta réplica es metodológico:
+The redesigned DEA exercises satisfy the \(3(m+s)\) rule:
 
-1. **El "1.0 universal" del paper es un artefacto.** Al reproducir el diseño del paper (7 variables, 6 DMUs) obtenemos eficiencia 1.0 en los 6 años, exactamente como reporta el paper. Pero con $n_{DMU}=6 \ll 3(m+s)=21$ el modelo no puede discriminar: clasifica a todas las unidades como eficientes por construcción, no por desempeño real.
+- ICT knowledge diffusion: 1 input, 2 outputs, 11 DMUs, threshold 9.
+- Innovation to GDP: 2 inputs, 1 output, 11 DMUs, threshold 9.
+- Diversification efficiency: 1 input, 3 outputs, 21 DMUs, threshold 12.
 
-2. **Al respetar la regla de adecuación, el DEA sí discrimina.** Los tres modelos válidos producen entre 1 y 2 años eficientes (no todos), con eficiencias medias de 0.42 a 0.94. Por ejemplo, en el modelo TIC la eficiencia cae de 1.0 (2010) a ~0.19 (2017–2019): los servidores seguros crecieron exponencialmente sin un aumento proporcional de usuarios de internet ni de producción científica, señal de rendimientos decrecientes de la inversión en infraestructura.
+These valid models no longer produce universal efficiency. The number of efficient years ranges from one to two, and the average efficiency ranges from 0.4183 to 0.9410.
 
-3. **Limitación de datos.** Variables clave de los pilares de innovación (gasto en I+D, investigadores) tienen cobertura WDI fragmentaria para EAU (≤7 años), lo que impide replicar el pilar "Educación y Recursos Humanos" —que el propio paper no pudo calcular— y restringe la ventana de los modelos.
+# Ecuador Extension
 
-# Extensión para Ecuador (HHI)
-
-Adaptamos el HHI a Ecuador usando el **Valor Agregado Bruto por rama de actividad (ISIC)** de la base *National Accounts Main Aggregates* de la UNSD, periodo 2000–2024.
-
-**Corrección metodológica.** Una primera versión usaba solo 3 macro-sectores (agricultura/industria/servicios). Con 3 sectores el HHI tiene un **piso matemático de 1/3 = 0.333**, lo que forzaba a Ecuador a aparecer *siempre* como "Least diversified" por construcción, no por concentración económica real. Al desagregar en **7 ramas ISIC** mutuamente excluyentes, el piso baja a 1/7 ≈ 0.143 (por debajo del umbral de "Diversified"), devolviendo poder discriminante al índice.
+The Ecuador extension applies HHI to value added by branch over 2000-2024.
 
 ```{python}
-import pandas as pd
-pd.read_csv("../outputs/tables/hhi_ecuador.csv")
+hhi_ecuador = pd.read_csv("../outputs/tables/hhi_ecuador.csv")
+hhi_ecuador[["year", "hhi", "classification"]]
 ```
 
-## Gráfico de Tendencia HHI de Ecuador
+Using seven ISIC branches is important. A three-sector measure has a theoretical HHI floor of \(1/3 = 0.333\), which already exceeds the `least diversified` threshold of 0.25. That design mechanically removes the possibility of classifying an economy as diversified or moderately diversified. With seven branches, the floor falls to \(1/7 \approx 0.143\), restoring discriminatory power.
 
-Con la medición corregida, Ecuador resulta **moderadamente diversificado** (HHI ≈ 0.18–0.24), no "Least diversified". Se observa una **tendencia ascendente** de la concentración —impulsada por el peso creciente de "Otras actividades" (servicios)— con un pico en 2020 (0.2367, choque COVID), pero los valores permanecen dentro del rango 0.15–0.25.
+```{python}
+pd.DataFrame({
+    "period": ["2000-2024"],
+    "minimum_hhi": [hhi_ecuador["hhi"].min()],
+    "maximum_hhi": [hhi_ecuador["hhi"].max()],
+    "latest_hhi": [hhi_ecuador.loc[hhi_ecuador["year"].idxmax(), "hhi"]],
+})
+```
 
-![Ecuador HHI Trend](../outputs/figures/hhi_ecuador.png)
+The corrected Ecuador measure remains in the moderately diversified range throughout the period. The highest value is 0.2367 in 2020, consistent with a shock year, but the series does not cross the 0.25 threshold.
 
-# Próximos Pasos (Fase de Extensión DEA)
+![Ecuador HHI trend](../outputs/figures/hhi_ecuador.png)
 
-1. Obtener indicadores de los pilares de la economía del conocimiento para Ecuador a partir de WDI.
-2. Ejecutar el modelo DEA CCR para evaluar la eficiencia relativa del sistema de innovación y TIC en el contexto de Ecuador.
+# Discussion
 
+The HHI replication is successful: differences from the published UAE table are small and classification-preserving. The DEA replication is more critical. It shows that a model can reproduce the paper's all-efficient DEA result while still being methodologically weak, because too many inputs and outputs are being evaluated against too few DMUs.
+
+The Ecuador extension adds a second methodological warning. Diversification measures are sensitive to the chosen sectoral aggregation. Too much aggregation can predetermine the classification before the data are analyzed.
+
+# Limitations
+
+The UAE HHI comparison depends on the availability and versioning of sectoral fixed-capital-formation data. Minor differences may reflect source revisions, rounding, or metadata changes.
+
+The DEA results should be read as exploratory. Year-level DMUs are useful for replication, but they are not a substitute for richer panel designs by sector, province, firm, institution, or comparable country group.
+
+The Ecuador extension currently covers HHI only. A full DEA extension would require a separate design decision about DMUs and a defensible mapping between knowledge-economy inputs and outputs.
+
+# Next Steps
+
+The most valuable next step is to build the Ecuador DEA extension. A defensible version should choose one DMU structure before collecting variables:
+
+1. Years as DMUs, using WDI or national time-series indicators.
+2. Provinces as DMUs, using Ecuadorian administrative data.
+3. Sectors as DMUs, using branch-level production, employment, innovation, or export indicators.
+
+The province or sector designs are preferable if the data are available, because they would create a richer cross-section and reduce the risk of the same low-DMU problem identified in the UAE paper.

@@ -15,7 +15,11 @@ currency" (https://unstats.un.org/unsd/amaapi/api/file/1).
 """
 import argparse
 import io
+import os
 from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+os.environ.setdefault("MPLCONFIGDIR", str(PROJECT_ROOT / ".matplotlib"))
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -90,7 +94,7 @@ def main() -> None:
     print("\nHHI de Ecuador (VAB por rama, ISIC):")
     print(out.to_string(index=False))
 
-    output_dir = Path("outputs/tables")
+    output_dir = PROJECT_ROOT / "outputs" / "tables"
     output_dir.mkdir(parents=True, exist_ok=True)
     # Guardar tambien las participaciones para trazabilidad.
     total = data.groupby("year")["gross_fixed_capital_formation_million_aed"].transform("sum")
@@ -113,7 +117,7 @@ def main() -> None:
     plt.legend()
     plt.grid(True, linestyle=":", alpha=0.6)
     plt.tight_layout()
-    figures_dir = Path("outputs/figures")
+    figures_dir = PROJECT_ROOT / "outputs" / "figures"
     figures_dir.mkdir(parents=True, exist_ok=True)
     plt.savefig(figures_dir / "hhi_ecuador.png", dpi=300)
     print(f"Guardado: {figures_dir / 'hhi_ecuador.png'}")
