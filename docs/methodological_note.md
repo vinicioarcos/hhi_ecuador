@@ -27,3 +27,16 @@ Para una réplica publicable, conviene reportar:
 - Inputs/outputs por pilar.
 - Tratamiento de datos faltantes.
 - Robustez: ventana temporal, sensibilidad por variable, comparación con bootstrap DEA si se desea.
+
+Regla operativa usada en la réplica:
+
+```text
+n_DMU >= 3 * (inputs + outputs)
+```
+
+Los modelos que no cumplen esta regla se reportan como subespecificados. La extensión Ecuador
+incluye dos diseños: un DEA anual exploratorio y un DEA sectorial fortalecido con ramas ISIC como
+DMU. El modelo sectorial usa participación promedio inicial como input y participación promedio
+reciente como output. Es reproducible con la fuente UNSD existente, pero todavía debería
+enriquecerse con empleo, productividad, exportaciones, capital, innovación o datos provinciales si
+esas fuentes comparables se incorporan al proyecto.

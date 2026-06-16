@@ -23,6 +23,9 @@ dea:
 # --- Extension Ecuador: HHI por rama ISIC (requiere internet) ---
 ecuador:
 	python src/ecuador_hhi.py
+	python src/ecuador_dea.py
+	python src/ecuador_sector_dea.py
+	python src/build_publication_tables.py
 
 # --- Reporte Quarto (HTML + Typst PDF) ---
 report:

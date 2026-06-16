@@ -82,7 +82,7 @@ O por etapas:
 make data       # descarga KAPSARC + WDI (requiere internet)
 make hhi        # HHI UAE desde datos primarios + comparación contra el paper + figura
 make dea        # construye dataset WDI y corre los modelos DEA CCR
-make ecuador    # extensión Ecuador (descarga UNSD, requiere internet)
+make ecuador    # extensión Ecuador: HHI UNSD + DEA anual/sectorial + tablas de publicación
 make report     # renderiza el reporte Quarto (HTML + PDF Typst)
 make test       # pruebas
 ```
@@ -93,6 +93,9 @@ Ejecución manual equivalente de las piezas clave:
 python src/hhi.py --input data/raw/hhi/gfcf_sector_template.csv   # HHI UAE
 python src/compare_hhi.py                                         # validación vs Tabla 3
 python src/run_dea_analysis.py                                    # DEA CCR (4 modelos)
+python src/ecuador_dea.py                                         # DEA exploratorio Ecuador
+python src/ecuador_sector_dea.py                                  # DEA sectorial Ecuador
+python src/build_publication_tables.py                            # tablas finales del artículo
 quarto render                                                     # reporte final
 ```
 
@@ -112,6 +115,17 @@ con columnas:
 year, sector, gross_fixed_capital_formation_million_aed
 ```
 
-## Extensión sugerida para Ecuador
+## Extensión para Ecuador
 
-La misma arquitectura puede adaptarse a Ecuador usando cuentas nacionales por rama de actividad del BCE, exportaciones por producto o empleo por rama ENEMDU. El HHI se mantiene igual; cambia la fuente y la unidad de análisis.
+La extensión implementada usa VAB por 7 ramas ISIC desde UNSD para calcular el HHI de Ecuador
+2000-2024. Incluye dos DEA:
+
+- DEA anual exploratorio: años como DMU; minería/utilities como input; manufactura,
+  transporte/comunicación y comercio/hoteles como outputs.
+- DEA sectorial fortalecido: sectores como DMU; participación promedio 2000-2004 como input y
+  participación promedio 2020-2024 como output. Este diseño usa 7 sectores, 1 input y 1 output,
+  por lo que supera el umbral 3*(m+s)=6.
+
+Para una versión todavía más fuerte del artículo, el siguiente salto sería enriquecer el DEA
+sectorial con empleo, exportaciones, productividad, capital, innovación o adopción digital por
+rama; o construir un DEA provincial con datos administrativos comparables.
