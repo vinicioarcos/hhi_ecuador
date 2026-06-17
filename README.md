@@ -1,30 +1,23 @@
-# REPLICA_AFZAL_2021_UAE
-
-Proyecto reproducible para replicar y extender el paper de Siddiqui y Afzal sobre diversificacion sectorial de Emiratos Arabes Unidos hacia una economia del conocimiento, manteniendo el tema original del repositorio.
-
-## Paper base
-
-**Siddiqui, S. A. & Afzal, M. N. I. (2022). _Sectoral diversification of UAE toward a knowledge-based economy_. Review of Economics and Political Science, 7(3), 177-193.**
-
-DOI verificado en la bibliografia local: `10.1108/REPS-07-2021-0075`.
+# ECUADOR_HHI_DEA
 
 ## Pregunta del proyecto
 
-El proyecto replica tres piezas del paper base y anade una extension a Ecuador:
+El proyecto estudia la diversificacion sectorial de Ecuador con dos herramientas
+reproducibles:
 
-1. Recalculo del indice Herfindahl-Hirschman (HHI) para la formacion bruta de capital fijo por 18 sectores del UAE.
-2. Auditoria metodologica del ejercicio DEA CCR usado para evaluar eficiencia de pilares de economia del conocimiento.
-3. Extension a Ecuador con HHI por ramas ISIC y ejercicios DEA exploratorios/sectoriales.
+1. HHI por ramas ISIC a partir del Valor Agregado Bruto de la base UNSD.
+2. Modelos DEA CCR exploratorios y sectoriales para evaluar transicion
+   productiva entre ramas.
 
 ## Estructura operativa
 
-El motor de la replica ya existente sigue en:
+El nucleo reproducible vive en:
 
 ```text
-src/            Scripts Python de HHI, DEA y tablas publicables
-data/           Datos raw y processed del flujo original
+src/            Scripts Python para HHI, DEA y tablas publicables de Ecuador
+data/           Datos auxiliares del flujo reproducible
 outputs/        Tablas y figuras generadas
-paper/          Reporte Quarto original de la replica
+paper/          Reporte Quarto principal
 tests/          Pruebas basicas
 ```
 
@@ -51,7 +44,7 @@ La estructura numerada se usa como capa de gobierno, literatura, submission y mo
 17_AUTOMATION/            Pipeline completo
 18_COMMON_PROTOCOLS/      Protocolos de integridad y no fabricacion
 19_POLICY_BRIEF/          Policy brief del proyecto
-20_AI_EXPOSURE_LINK/      No aplica por defecto; reservado para extensiones futuras
+20_AI_EXPOSURE_LINK/      Reservado para extensiones futuras
 ```
 
 ## Instalacion
@@ -64,7 +57,7 @@ pip install -r requirements.txt
 
 ## Flujo reproducible
 
-Pipeline principal del proyecto:
+Pipeline principal:
 
 ```bash
 make all
@@ -73,8 +66,6 @@ make all
 Etapas:
 
 ```bash
-make hhi
-make dea
 make ecuador
 make report
 make test
@@ -90,10 +81,11 @@ bash 17_AUTOMATION/run_pipeline.sh
 
 Fuentes actualmente contempladas:
 
-- `data/raw/hhi/gfcf_sector_template.csv`: plantilla para UAE GFCF por 18 sectores.
-- `data/processed/hhi_values_from_paper_table3.csv`: valores publicados en la Tabla 3 del paper.
-- `data/raw/wdi/wdi_uae_2000_2020.csv`: WDI para auditoria DEA.
-- `outputs/tables/hhi_ecuador.csv`: salida de la extension Ecuador basada en UNSD.
+- `outputs/tables/hhi_ecuador.csv`: participaciones por rama, HHI y
+  clasificacion anual para Ecuador.
+- `outputs/tables/dea_ecuador_dataset.csv`: dataset DEA con anos como DMU.
+- `outputs/tables/dea_ecuador_sector_dataset.csv`: dataset DEA con ramas como
+  DMU.
 
 La tabla inventario para el manuscrito se genera con `src/build_publication_tables.py`.
 

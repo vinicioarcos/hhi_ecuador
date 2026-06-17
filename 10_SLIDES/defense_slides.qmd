@@ -1,25 +1,26 @@
 ---
-title: "Replica Afzal UAE"
+title: "Ecuador HHI/DEA"
 format:
   revealjs:
     theme: simple
     slide-number: true
 ---
 
-## Paper base
+## Tema
 
-Siddiqui and Afzal on UAE sectoral diversification toward a knowledge-based economy
+Diversificacion sectorial de Ecuador con HHI por ramas ISIC y DEA CCR
 
-## Replica
+## HHI
 
-- HHI recomputation
-- Comparison against published Table 3
-- DEA CCR audit
+- Siete ramas mutuamente excluyentes
+- Serie anual 2000-2024
+- Clasificacion reproducible
 
-## Extension
+## DEA
 
-- Ecuador HHI by ISIC branches
-- Ecuador DEA exercises
+- DEA por anos
+- DEA por ramas
+- Regla de adecuacion `n_DMU >= 3(m+s)`
 
 ## Revista objetivo
 

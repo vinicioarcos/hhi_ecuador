@@ -2,22 +2,22 @@
 
 ## Objetivo
 
-Publicar una replica rigurosa del paper de Siddiqui y Afzal sobre diversificacion sectorial del UAE, incorporando una extension metodologica a Ecuador y una discusion clara sobre las limitaciones del DEA original.
+Publicar un estudio reproducible sobre diversificacion sectorial de Ecuador,
+centrado en HHI por ramas ISIC y ejercicios DEA parsimoniosos de transicion
+productiva.
 
 ## Etapas
 
-1. Consolidar la replica exacta del HHI del UAE.
-2. Auditar y documentar la fragilidad del DEA CCR del paper base.
-3. Terminar la extension Ecuador y sus tablas de publicacion.
+1. Consolidar el HHI de Ecuador con ramas ISIC mutuamente excluyentes.
+2. Mantener un DEA por anos como ejercicio exploratorio.
+3. Fortalecer el DEA sectorial de Ecuador con mejor base comparativa.
 4. Integrar literatura complementaria disponible en `01_LITERATURA/PAPERS/`.
 5. Ajustar manuscrito y materiales para envio al MLAJ.
 
 ## Estado
 
-- Paper base: definido
-- PDF base: disponible
-- HHI UAE: replicado por pipeline existente
-- DEA UAE: auditado por pipeline existente
-- Extension Ecuador: activa
+- HHI Ecuador: activo
+- DEA Ecuador por anos: activo
+- DEA Ecuador por ramas: activo
 - Revista objetivo MLAJ: definida
 - Indexacion Latindex: `PENDIENTE_VERIFICAR`

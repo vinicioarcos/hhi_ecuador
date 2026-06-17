@@ -2,30 +2,30 @@
 import Layout from "../components/Layout.astro";
 
 const milestones = [
-  ["Paper base", "Siddiqui & Afzal (2022)"],
-  ["HHI UAE", "Replica activa"],
-  ["DEA UAE", "Auditoria activa"],
-  ["Extension Ecuador", "Activa"],
+  ["HHI Ecuador", "Activo"],
+  ["DEA por anos", "Activo"],
+  ["DEA por ramas", "Activo"],
+  ["Pipeline", "Ecuador-only"],
   ["Revista objetivo", "MLAJ"],
   ["Latindex", "PENDIENTE_VERIFICAR"]
 ];
 
 const sections = [
-  ["Literatura", "PDF base y literatura complementaria sobre diversificacion, recursos y conocimiento."],
-  ["HHI", "Replica de la Tabla 3 del UAE con GFCF por 18 sectores."],
-  ["DEA", "Auditoria CCR del paper original y prueba de adecuacion de DMUs."],
-  ["Ecuador", "HHI por ramas ISIC y ejercicios DEA exploratorios y sectoriales."],
+  ["Literatura", "Literatura complementaria sobre diversificacion, transformacion estructural y concentracion sectorial."],
+  ["HHI", "HHI de Ecuador con siete ramas ISIC mutuamente excluyentes."],
+  ["DEA", "Modelos CCR parsimoniosos por anos y por ramas economicas."],
+  ["Datos", "UNSD National Accounts Main Aggregates como fuente base reproducible."],
   ["Submission", "MLAJ como revista objetivo; indexacion Latindex pendiente de verificacion."]
 ];
 ---
-<Layout title="Dashboard de replica Afzal UAE">
+<Layout title="Dashboard Ecuador HHI/DEA">
   <section class="hero">
-    <div class="status">Replica del paper base</div>
-    <h1>Diversificacion sectorial del UAE</h1>
+    <div class="status">Proyecto Ecuador-only</div>
+    <h1>Diversificacion sectorial de Ecuador</h1>
     <p>
-      Monitoreo de la replica del paper de Siddiqui y Afzal, la auditoria metodologica
-      del DEA CCR y la extension a Ecuador. El proyecto mantiene el tema original del
-      repositorio y evita mezclarlo con lineas ajenas.
+      Monitoreo del HHI por ramas ISIC y de los ejercicios DEA de transicion
+      productiva para Ecuador. El repositorio fue recortado para dejar fuera
+      lineas ajenas y mantener un alcance tematico unico.
     </p>
   </section>
 
@@ -64,7 +64,7 @@ const sections = [
       </thead>
       <tbody>
         <tr><td>Codigo principal</td><td><span class="mono">src/</span></td></tr>
-        <tr><td>Reporte original</td><td><span class="mono">paper/replication_report.qmd</span></td></tr>
+        <tr><td>Reporte principal</td><td><span class="mono">paper/replication_report.qmd</span></td></tr>
         <tr><td>Literatura</td><td><span class="mono">01_LITERATURA/PAPERS/</span></td></tr>
         <tr><td>Resultados</td><td><span class="mono">outputs/tables/ y outputs/figures/</span></td></tr>
         <tr><td>Submission</td><td><span class="mono">07_SUBMISSION/</span></td></tr>

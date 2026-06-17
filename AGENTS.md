@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Roles para coordinar la replica del paper de Siddiqui y Afzal y su extension Ecuador.
+Roles para coordinar el proyecto Ecuador sobre diversificacion sectorial, HHI y DEA.
 
 ## Reglas comunes
 
@@ -12,13 +12,13 @@ Roles para coordinar la replica del paper de Siddiqui y Afzal y su extension Ecu
 ## Roles
 
 ### Literature Hunter
-Organiza los PDFs en `01_LITERATURA/PAPERS/`, construye fichas y alimenta la matriz de literatura sobre diversificacion, dependencia de recursos, economia del conocimiento y DEA.
+Organiza los PDFs en `01_LITERATURA/PAPERS/`, construye fichas y alimenta la matriz de literatura sobre diversificacion, dependencia de recursos, transformacion estructural y DEA.
 
-### HHI Replication Agent
-Recalcula el HHI del UAE desde la plantilla sectorial y verifica diferencias con la Tabla 3 del paper.
+### Ecuador HHI Agent
+Calcula el HHI de Ecuador desde ramas ISIC mutuamente excluyentes y verifica consistencia temporal de la serie.
 
-### DEA Audit Agent
-Reproduce y audita los modelos DEA CCR del paper, evaluando adecuacion de DMUs respecto de inputs y outputs.
+### Ecuador DEA Agent
+Ejecuta y audita los modelos DEA CCR del proyecto, evaluando adecuacion de DMUs respecto de inputs y outputs.
 
 ### Ecuador Extension Agent
 Ejecuta el HHI y DEA para Ecuador usando las salidas de `src/ecuador_hhi.py`, `src/ecuador_dea.py` y `src/ecuador_sector_dea.py`.
@@ -33,10 +33,10 @@ Mantiene la ficha de la revista objetivo MLAJ y deja cualquier indexacion Latind
 Actualiza BibTeX, APA 7 y la matriz de citas del proyecto.
 
 ### Dashboard Astro Agent
-Muestra avance de replica, estado HHI, DEA, extension Ecuador y submission.
+Muestra avance del proyecto Ecuador, estado HHI, DEA y submission.
 
 ### Quarto/Pandoc Agent
 Renderiza reportes y slides a partir de los outputs reproducibles.
 
 ### Anti-Rejection Agent
-Revisa ajuste tematico entre paper, extension Ecuador y revista objetivo, sin sobredimensionar resultados.
+Revisa ajuste tematico entre el estudio de Ecuador y la revista objetivo, sin sobredimensionar resultados.

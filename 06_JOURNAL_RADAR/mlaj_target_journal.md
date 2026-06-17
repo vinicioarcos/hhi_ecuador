@@ -18,4 +18,6 @@ Fuente revisada: <https://mlaj-revista.org/index.php/journal/Sobre-revista>
 
 ## Implicacion para este proyecto
 
-La extension Ecuador y el enfoque latinoamericano pueden mejorar el ajuste tematico para MLAJ, pero el manuscrito debe seguir centrado en la replica del paper de Siddiqui y Afzal.
+El enfoque Ecuador y la dimension latinoamericana mejoran el ajuste tematico
+para MLAJ, siempre que el manuscrito mantenga una contribucion empirica clara y
+no sobreafirme el alcance de los resultados.

@@ -1,32 +1,39 @@
 # Title
 
-Replication and extension of Siddiqui and Afzal on UAE sectoral diversification toward a knowledge-based economy
+Sectoral diversification in Ecuador: ISIC-branch HHI and DEA exercises on productive transition
 
 # Abstract
 
-This manuscript replicates Siddiqui and Afzal by recomputing the HHI for UAE sectoral gross fixed capital formation and by auditing the DEA CCR exercise reported in the original study. It also extends the diversification logic to Ecuador using ISIC branches and complementary DEA exercises. All quantitative statements must come from the project's reproducible pipeline.
+This manuscript studies Ecuador's sectoral diversification through a
+reproducible workflow. It computes the HHI from seven mutually exclusive ISIC
+branches derived from UNSD value-added data and complements that descriptive
+evidence with two CCR DEA exercises: one with years as DMUs and one with
+economic branches as DMUs. All quantitative statements must come from the
+project's reproducible pipeline.
 
 # Introduction
 
-Economic diversification is central to resource-dependent economies and to policy narratives around knowledge-based transitions. The base paper studies this issue for the UAE through descriptive indicators, HHI and DEA.
+Economic diversification is central to commodity-exposed economies and to
+policy discussions on structural change. In Ecuador, the empirical challenge is
+to use a sector partition with enough discriminatory power and DEA designs that
+respect the relation between DMUs, inputs, and outputs.
 
 # Literature
 
-Cover sectoral diversification, resource dependence, structural transformation, knowledge economy and concentration metrics, using verified literature from `01_LITERATURA/PAPERS/`.
+Cover sectoral diversification, resource dependence, structural transformation,
+and concentration metrics using verified literature from `01_LITERATURA/PAPERS/`.
 
 # Methodology
 
 - HHI recomputation
-- Comparison against the paper's Table 3
-- DEA CCR adequacy audit using `n_DMU >= 3(m+s)`
-- Ecuador extension
+- ISIC branch construction for Ecuador
+- DEA with adequacy rule `n_DMU >= 3(m+s)`
+- Comparison between year-level and sector-level DEA
 
 # Data
 
-- UAE sectoral GFCF
-- Published HHI benchmark values
-- WDI for UAE DEA audit
-- UNSD for Ecuador
+- UNSD National Accounts Main Aggregates
+- Derived tables in `outputs/tables/`
 
 # Results
 
@@ -38,7 +45,8 @@ Discuss sensitivity to sectoral aggregation and DEA dimensional adequacy.
 
 # Discussion
 
-Keep the exact replication, DEA audit and Ecuador extension analytically distinct.
+Separate clearly the descriptive HHI findings from the exploratory scope of the
+DEA exercises.
 
 # Conclusion
 

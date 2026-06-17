@@ -53,7 +53,7 @@ def main() -> None:
     parser.add_argument("--input", type=str, default=None,
                         help="CSV with year, sector, gross_fixed_capital_formation_million_aed.")
     parser.add_argument("--paper-table", action="store_true",
-                        help="Print HHI values reported in the paper Table 3.")
+                        help="Print the benchmark HHI table if available in data/processed.")
     args = parser.parse_args()
 
     TABLES.mkdir(parents=True, exist_ok=True)

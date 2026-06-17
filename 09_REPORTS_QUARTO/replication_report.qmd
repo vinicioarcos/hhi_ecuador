@@ -1,5 +1,5 @@
 ---
-title: "Companion Report: Replica Afzal UAE"
+title: "Companion Report: Ecuador HHI/DEA"
 format:
   html:
     toc: true
@@ -10,13 +10,13 @@ execute:
 
 # Project scope
 
-This companion report documents the same topic as the core report in `paper/replication_report.qmd`: replication of Siddiqui and Afzal on UAE sectoral diversification, DEA audit, and Ecuador extension.
+This companion report documents the Ecuador-only scope of the core report in
+`paper/replication_report.qmd`: HHI by ISIC branches, DEA by years, and DEA by
+economic branches.
 
 # Core files
 
 - `src/hhi.py`
-- `src/compare_hhi.py`
-- `src/run_dea_analysis.py`
 - `src/ecuador_hhi.py`
 - `src/ecuador_dea.py`
 - `src/ecuador_sector_dea.py`
