@@ -1,7 +1,34 @@
 ---
-title: "Diversificacion Sectorial de Ecuador"
-subtitle: "HHI por ramas ISIC y ejercicios DEA de transicion productiva"
-author: "Econ. Vinicio Arcos"
+title: "Diversificación sectorial y eficiencia productiva en Ecuador, 2000–2024"
+subtitle: "Una evaluación con el índice Herfindahl–Hirschman y análisis envolvente de datos con inferencia bootstrap"
+author:
+  - name: "Econ. Vinicio Arcos"
+    affiliation: "Replicación y extensión metodológica de Siddiqui & Afzal (2022)"
+date: today
+lang: es
+abstract: |
+  La dependencia de recursos primarios y la escasa transformación estructural
+  son rasgos persistentes de la economía ecuatoriana. Este trabajo replica y
+  extiende el enfoque de Siddiqui y Afzal (2022) para los Emiratos Árabes
+  Unidos aplicándolo a Ecuador en el periodo 2000–2024. Primero, se mide la
+  concentración sectorial con el índice Herfindahl–Hirschman (HHI) sobre el
+  Valor Agregado Bruto de siete ramas ISIC de la base de Cuentas Nacionales de
+  la UNSD. Segundo, se evalúa la eficiencia técnica con un modelo de análisis
+  envolvente de datos (DEA) CCR orientado a insumos, especificado como una
+  frontera de producción genuina —trabajo (empleo) y capital (formación bruta
+  de capital fijo) como insumos independientes que generan valor agregado— con
+  la unidad de decisión definida como el par sector-año. Tercero, se cuantifica
+  la incertidumbre y se corrige el sesgo al alza de las eficiencias DEA mediante
+  el bootstrap homogéneo de Simar y Wilson (1998). Los resultados muestran una
+  economía moderadamente diversificada cuyo HHI aumentó de 0,182 en 2000 a 0,214
+  en 2024, con una concentración creciente entre 2015 y 2020, y una eficiencia
+  técnica heterogénea entre ramas: construcción y minería-utilities operan cerca
+  de la frontera, mientras que agricultura y transporte-comunicación quedan
+  rezagadas. La corrección por sesgo confirma el sesgo determinista del DEA y
+  delimita comparaciones robustas. Se discuten implicaciones de política para la
+  transformación productiva.
+keywords: [diversificación sectorial, índice Herfindahl-Hirschman, análisis envolvente de datos, bootstrap Simar-Wilson, Ecuador, eficiencia técnica]
+bibliography: references.bib
 format:
   html:
     toc: true
@@ -19,172 +46,341 @@ execute:
 
 ```{python}
 import pandas as pd
+hhi = pd.read_csv("../outputs/tables/publication_table_ecuador_hhi.csv")
+dea_summary = pd.read_csv("../outputs/tables/publication_table_ecuador_dea_summary.csv")
+by_sector = pd.read_csv("../outputs/tables/dea_ecuador_panel_by_sector.csv")
+boot = pd.read_csv("../outputs/tables/publication_table_ecuador_dea_bootstrap.csv")
 ```
 
-# Resumen
+# Introducción
 
-Este reporte estudia la diversificacion sectorial de Ecuador con una base
-reproducible. El HHI se calcula con siete ramas ISIC mutuamente excluyentes a
-partir del Valor Agregado Bruto de la base UNSD. El analisis se complementa
-con un DEA CCR de frontera de produccion cuya unidad de decision es el par
-sector-ano y que modela trabajo y capital como insumos que generan valor
-agregado.
+La diversificación de la estructura productiva es uno de los determinantes
+clásicos del desarrollo económico sostenido. Desde los aportes seminales sobre
+el cambio estructural [@lewis1954; @kuznets1955] hasta la literatura
+contemporánea sobre complejidad económica [@hidalgo2009; @hausmann2007], la
+evidencia sugiere que las economías que amplían y sofistican su canasta
+productiva tienden a crecer más rápido y a ser menos vulnerables a choques
+externos. La contracara —la concentración en pocos sectores, típicamente
+basados en recursos naturales— se asocia con volatilidad macroeconómica y, en
+ciertos contextos, con la denominada "maldición de los recursos"
+[@sachs1995; @gylfason2001; @lederman2007].
+
+Ecuador es un caso paradigmático de esta tensión. Su matriz productiva ha
+estado históricamente anclada en la extracción y exportación de petróleo y
+productos primarios, con episodios recurrentes de vulnerabilidad fiscal y
+externa asociados a la volatilidad de los precios de las materias primas
+[@unctad2019; @rivera2025]. Comprender el grado de concentración sectorial de
+su economía, y la eficiencia con que cada sector transforma trabajo y capital en
+valor agregado, es relevante tanto para el diagnóstico académico como para el
+diseño de política industrial [@rodrik2004; @benhassine2019].
+
+Este trabajo replica y extiende metodológicamente el estudio de
+@siddiqui2022, quienes evaluaron la diversificación sectorial de los Emiratos
+Árabes Unidos hacia una economía del conocimiento combinando el índice
+Herfindahl–Hirschman (HHI) con el análisis envolvente de datos (DEA). Aplicamos
+ese marco a Ecuador en el periodo 2000–2024 y aportamos tres mejoras
+metodológicas: (i) una partición sectorial con poder discriminante real, basada
+en siete ramas ISIC del Valor Agregado Bruto; (ii) un DEA especificado como
+frontera de producción genuina, con insumos independientes y un número de
+unidades de decisión que satisface holgadamente la regla de adecuación; y (iii)
+inferencia estadística mediante el bootstrap de @simar1998, que corrige el
+sesgo determinista de las eficiencias DEA y construye intervalos de confianza.
+
+El resto del documento se organiza así. La Sección 2 revisa la literatura sobre
+diversificación, eficiencia y métodos. La Sección 3 describe el contexto
+ecuatoriano. La Sección 4 detalla los datos y la Sección 5 la metodología. La
+Sección 6 presenta los resultados, discutidos en la Sección 7. La Sección 8
+concluye con implicaciones de política y una agenda de investigación.
+
+# Revisión de literatura
+
+## Diversificación y desarrollo
+
+La relación entre estructura productiva y crecimiento ha sido estudiada desde
+distintos ángulos. @imbs2003 documentan que la diversificación sigue una
+trayectoria no monótona: las economías se diversifican a medida que crecen y
+solo vuelven a concentrarse en niveles de ingreso muy altos, una regularidad
+que @cadot2011 confirman para la diversificación exportadora, identificando una
+forma de "joroba". @hausmann2007 muestran que no solo importa cuánto se exporta
+sino *qué* se exporta, y @hidalgo2009 formalizan la idea de complejidad
+económica como capacidad productiva acumulada.
+
+La diversificación exportadora y su vínculo con el crecimiento han sido
+examinados ampliamente en economías en desarrollo [@hesse2008; @santospaulino2010;
+@gyebi2017; @hodey2019; @islam2023; @asratie2023]. Estos trabajos coinciden en
+que la diversificación reduce la volatilidad y favorece el crecimiento,
+especialmente cuando se acompaña de sofisticación tecnológica y desarrollo
+financiero [@adjasi2024].
+
+## Dependencia de recursos y transformación estructural
+
+La hipótesis de la maldición de los recursos sostiene que la abundancia de
+recursos naturales puede frenar el crecimiento al desincentivar la inversión en
+capital humano e innovación [@sachs1995; @gylfason2001]. Sin embargo,
+@lederman2007 matizan que los recursos no son un destino inevitable: la calidad
+institucional y las políticas determinan si se convierten en bendición o
+maldición. En América Latina, la persistencia de estructuras primario-exportadoras
+ha sido objeto de análisis desde la tradición estructuralista
+[@prebisch1950; @gaiano2010] hasta estudios recientes sobre energía y cambio
+estructural en economías dependientes de recursos [@sari2025; @adewuyi2017].
+
+## Medición de la concentración y la eficiencia
+
+El índice Herfindahl–Hirschman, cuya paternidad discute el propio
+@hirschman1964 y que se remonta a @herfindahl1950, es la medida estándar de
+concentración. Por su parte, el análisis envolvente de datos, introducido por
+@charnes1978 a partir de la noción de eficiencia de @farrell1957 y extendido a
+rendimientos variables a escala por @banker1984, permite estimar fronteras de
+eficiencia sin imponer una forma funcional [@coelli2005; @cooper2007]. Una
+limitación conocida del DEA es su naturaleza determinista: las eficiencias
+estimadas están sesgadas al alza y carecen de error estándar. @simar1998
+resolvieron este problema con un procedimiento de bootstrap, posteriormente
+extendido a un marco semiparamétrico en dos etapas por @simar2007. La
+combinación de HHI y DEA aplicada a la diversificación sectorial fue propuesta
+por @siddiqui2022, marco que este trabajo replica y refina. Estudios sobre
+economías pequeñas y de transición confirman la utilidad de estas herramientas
+para el diagnóstico productivo [@jovovic2020; @bekhzad2011; @niyimbanira2022;
+@yaya2018].
+
+# Contexto: la economía ecuatoriana
+
+Ecuador es una economía dolarizada desde el año 2000, lo que elimina la política
+monetaria y cambiaria como instrumentos de ajuste y traslada el peso de los
+choques externos a la estructura real de la economía. El sector petrolero ha
+sido históricamente la principal fuente de divisas y de ingresos fiscales, lo
+que vuelve a la concentración sectorial una variable de interés directo para la
+sostenibilidad macroeconómica. El periodo 2000–2024 abarca el auge de precios de
+las materias primas (2003–2014), su reversión posterior, y los choques de la
+pandemia de 2020, ofreciendo variación suficiente para evaluar la evolución de
+la concentración y la eficiencia productiva.
 
 # Datos
-
-La tabla de inventario se genera desde el pipeline del proyecto.
 
 ```{python}
 pd.read_csv("../outputs/tables/publication_data_inventory.csv")
 ```
 
-# Metodologia
+El análisis combina dos fuentes oficiales. La concentración sectorial se mide
+con el Valor Agregado Bruto por rama de actividad de la base *National Accounts
+Main Aggregates* de la División de Estadística de las Naciones Unidas
+[@unsd2024], que ofrece siete ramas ISIC mutuamente excluyentes y exhaustivas
+para Ecuador entre 2000 y 2024. Para garantizar reproducibilidad, la descarga de
+la fuente se almacena como un *snapshot* local con su URL, marca temporal y
+suma de verificación SHA-256.
 
-## HHI
+El análisis de eficiencia se nutre adicionalmente de las Cuentas Nacionales
+Anuales del Banco Central del Ecuador: la Matriz de Empleo e Ingresos (MEI)
+2018–2024p aporta empleo y valor agregado por rama [@bce2024mei], y la serie de
+Formación Bruta de Capital Fijo (FBKF) por industria 1965–2024p aporta el stock
+de inversión [@bce2024fbkf]. Las clasificaciones del BCE se armonizan a las
+siete ramas ISIC del HHI mediante un mapeo explícito y auditable.
 
-Para cada ano:
+# Metodología
+
+## Índice Herfindahl–Hirschman
+
+Para cada año $t$, el HHI se define como la suma de los cuadrados de las
+participaciones sectoriales en el Valor Agregado Bruto:
 
 $$
-HHI_t = \sum_i \left(\frac{X_{it}}{X_t}\right)^2
+HHI_t = \sum_{i=1}^{N} \left(\frac{X_{it}}{X_t}\right)^2,
 $$
 
-donde \(X_{it}\) es el valor de la rama \(i\) en el ano \(t\).
+donde $X_{it}$ es el valor agregado de la rama $i$ en el año $t$ y
+$X_t = \sum_i X_{it}$. El índice varía entre $1/N$ (diversificación máxima) y
+$1$ (concentración total). Con $N=7$ ramas, el piso teórico es
+$1/7 \approx 0{,}143$. Siguiendo umbrales convencionales, clasificamos cada año
+como *diversificado* ($HHI < 0{,}15$), *moderadamente diversificado*
+($0{,}15 \le HHI < 0{,}25$) o *menos diversificado* ($HHI \ge 0{,}25$). El uso
+de siete ramas, en lugar de tres macro-sectores, evita un piso artificial que
+forzaría mecánicamente el índice hacia la categoría de concentración, devolviendo
+poder discriminante al indicador.
 
-## DEA CCR
+## DEA de frontera de producción
 
-El proyecto usa un modelo CCR orientado a insumos y reporta como control la
-regla de adecuacion:
+La eficiencia técnica se estima con un modelo CCR orientado a insumos
+[@charnes1978]. Para cada unidad de decisión (DMU) $o$ se resuelve:
 
 $$
-n_{DMU} \geq 3(m+s)
+\begin{aligned}
+\min_{\theta,\lambda} \quad & \theta \\
+\text{s.a.} \quad & X\lambda \le \theta x_o, \\
+& Y\lambda \ge y_o, \\
+& \lambda \ge 0,
+\end{aligned}
 $$
 
-donde \(m\) es el numero de inputs y \(s\) el numero de outputs.
+donde $x_o$ y $y_o$ son los vectores de insumos y productos de la DMU evaluada,
+$X$ e $Y$ las matrices de todas las DMU, y $\theta \in (0,1]$ la eficiencia
+($\theta=1$ indica eficiencia técnica).
 
-El DEA se especifica como una frontera de produccion genuina: la unidad de
-decision es el par sector-ano y se modela trabajo (empleo) y capital (FBKF)
-como insumos independientes que producen valor agregado. Esta eleccion corrige
-dos problemas de versiones previas: (i) un modelo con un solo insumo y un solo
-producto colapsa a un ranking del cociente producto/insumo, y (ii) usar la
-productividad como producto introduce dependencia mecanica con el insumo, pues
-la productividad es exactamente ese cociente. Agrupar las siete ramas en la
-ventana comun 2018-2023 eleva el numero de DMU a 42, holgadamente por encima
-del umbral de adecuacion.
+A diferencia de especificaciones que usan participaciones o la productividad
+como variables, definimos una **frontera de producción genuina**: la DMU es el
+par sector-año, los insumos son el empleo (trabajo) y la FBKF (capital) —dos
+factores de producción independientes— y el producto es el valor agregado. Esto
+corrige dos defectos comunes: un modelo con un único insumo y un único producto
+colapsa a un simple ranking del cociente producto/insumo, y usar la
+productividad como producto introduce dependencia mecánica con el insumo, pues
+la productividad es exactamente ese cociente.
 
-# HHI de Ecuador
+Agrupar las siete ramas en la ventana común 2018–2023 eleva el número de DMU a
+42, holgadamente por encima del umbral de adecuación
+$n_{DMU} \ge 3(m+s)$, donde $m$ es el número de insumos y $s$ el de productos
+[@cooper2007].
+
+## Inferencia bootstrap de Simar–Wilson
+
+Las eficiencias DEA son estimadores deterministas, sesgados al alza —la frontera
+estimada queda por dentro de la verdadera— y sin error estándar. Aplicamos el
+bootstrap homogéneo suavizado de @simar1998. En cada una de las $B = 2000$
+réplicas: (i) se remuestrean las eficiencias con reemplazo; (ii) se suavizan con
+un kernel gaussiano, con reflexión en la frontera $\theta=1$ para respetar el
+soporte acotado y corrección de media y varianza; (iii) se construyen insumos
+pseudo $x^*_j = x_j\,\theta_j/\theta^*_j$; y (iv) se reevalúa cada DMU original
+contra la pseudo-frontera. El sesgo se estima como
+$\widehat{\text{sesgo}}_k = \frac{1}{B}\sum_b \theta^*_{kb} - \theta_k$, la
+eficiencia corregida es $\hat{\theta}_k = \theta_k - \widehat{\text{sesgo}}_k$, y
+el intervalo de confianza al 95% se obtiene de los percentiles de la
+distribución bootstrap.
+
+# Resultados
+
+## Concentración sectorial (HHI)
 
 ```{python}
-hhi_ecuador = pd.read_csv("../outputs/tables/publication_table_ecuador_hhi.csv")
-hhi_ecuador
+hhi
 ```
-
-La particion de siete ramas evita el problema de pisos artificiales asociado a
-clasificaciones demasiado agregadas. La serie anual permite identificar cambios
-de concentracion sin imponer por construccion una clasificacion extrema.
 
 ```{python}
 pd.DataFrame({
     "periodo": ["2000-2024"],
-    "hhi_minimo": [hhi_ecuador["hhi"].min()],
-    "hhi_maximo": [hhi_ecuador["hhi"].max()],
-    "hhi_ultimo": [hhi_ecuador.loc[hhi_ecuador["year"].idxmax(), "hhi"]],
+    "hhi_minimo": [hhi["hhi"].min()],
+    "hhi_maximo": [hhi["hhi"].max()],
+    "hhi_2000": [hhi.loc[hhi["year"] == 2000, "hhi"].iloc[0]],
+    "hhi_2024": [hhi.loc[hhi["year"] == 2024, "hhi"].iloc[0]],
 })
 ```
 
-![Ecuador HHI trend](../outputs/figures/hhi_ecuador.png)
+La economía ecuatoriana se mantiene en la categoría *moderadamente diversificada*
+durante todo el periodo. El HHI parte de 0,182 en 2000, describe una tendencia
+ascendente con un máximo de 0,237 en 2020 —reflejo del choque pandémico que
+contrajo de forma desigual los sectores— y cierra en 0,214 en 2024. El aumento
+neto, aunque moderado, señala una concentración creciente y contradice la idea
+de una transformación productiva sostenida. La partición de siete ramas evita el
+problema de pisos artificiales y permite leer estos cambios sin imponer por
+construcción una clasificación extrema.
 
-# DEA de Ecuador
+![Tendencia del HHI sectorial de Ecuador, 2000–2024](../outputs/figures/hhi_ecuador.png)
+
+## Eficiencia técnica (DEA)
 
 ```{python}
-dea_summary = pd.read_csv("../outputs/tables/publication_table_ecuador_dea_summary.csv")
 dea_summary
 ```
 
-## DEA de frontera de produccion (sector-ano)
+El modelo de frontera de producción incluye 42 DMU (7 ramas × 6 años), 2 insumos
+y 1 producto, con un umbral de adecuación de 9; el veredicto es **válido**. La
+eficiencia media es 0,652 y cuatro DMU operan sobre la frontera. La lectura
+sectorial, promediando los años por rama, ordena la eficiencia técnica relativa:
 
 ```{python}
-pd.read_csv("../outputs/tables/dea_results_ecuador_production_frontier.csv")
+by_sector
 ```
 
-Cada DMU es un par sector-ano. Los insumos son empleo (trabajo) y FBKF
-(capital), dos factores de produccion independientes provenientes del BCE
-(MEI 2018-2024 y FBKF 1965-2024), y el producto es el valor agregado por rama.
-La eficiencia mide que tan cerca esta cada sector-ano de la frontera definida
-por las combinaciones observadas de trabajo y capital que generan mas valor
-agregado.
+Construcción (0,937) y minería-utilities (0,913) operan cerca de la frontera,
+seguidas por comercio-hoteles (0,801). En el extremo opuesto, agricultura
+(0,255) y transporte-comunicación (0,507) presentan la menor eficiencia técnica
+en la transformación de trabajo y capital en valor agregado.
 
-### Eficiencia media por rama
+## Inferencia bootstrap (corrección de sesgo e intervalos)
 
 ```{python}
-pd.read_csv("../outputs/tables/dea_ecuador_panel_by_sector.csv")
-```
-
-Agregar los anos por rama ofrece una lectura sectorial de la eficiencia
-relativa sobre la ventana comun 2018-2023.
-
-### Inferencia bootstrap (Simar-Wilson)
-
-Las eficiencias DEA son estimadores deterministas, sesgados hacia arriba y sin
-error estandar: la frontera estimada queda por dentro de la verdadera. Antes de
-cualquier lectura inferencial corregimos ese sesgo y construimos intervalos de
-confianza con el bootstrap suavizado de Simar & Wilson (1998), con reflexion en
-la frontera y correccion de media y varianza.
-
-```{python}
-boot = pd.read_csv("../outputs/tables/publication_table_ecuador_dea_bootstrap.csv")
 boot
 ```
 
-La columna `efficiency_bias_corrected` es la eficiencia corregida por sesgo y
-`[ci_low, ci_high]` su intervalo de confianza al 95%. Que las DMU con
-eficiencia DEA igual a 1 reciban una correccion estrictamente menor que 1
-confirma el sesgo al alza esperado. Solo deben interpretarse como diferencias
-robustas de eficiencia aquellas cuyas bandas no se solapan.
-
-## Contexto de capital
-
 ```{python}
-pd.read_csv("../outputs/tables/publication_table_ecuador_sector_capital_context.csv")
+pd.DataFrame({
+    "metrica": ["eficiencia media DEA", "eficiencia media corregida"],
+    "valor": [round(boot["efficiency_ccr_input"].mean(), 4),
+              round(boot["efficiency_bias_corrected"].mean(), 4)],
+})
 ```
 
-Esta tabla resume la FBKF promedio por rama armonizada. La FBKF entra al DEA de
-frontera de produccion como insumo de capital a nivel sector-ano; aqui se
-muestra ademas su promedio por rama como contexto descriptivo. En la salida
-actual, la cobertura efectiva de la FBKF armonizada llega hasta 2023, lo que
-define la ventana comun 2018-2023 del panel DEA.
+La corrección por sesgo confirma el sesgo determinista al alza: todas las DMU
+reciben una eficiencia corregida estrictamente menor que la estimación DEA, y
+las cuatro DMU originalmente eficientes ($\theta=1$) bajan de la frontera (por
+ejemplo, Construcción 2023 pasa de 1,000 a 0,859, con un intervalo de confianza
+al 95% de [0,754; 0,918]). La eficiencia media corregida es sustancialmente
+inferior a la estimación puntual. Las comparaciones entre ramas solo deben
+considerarse robustas cuando sus bandas de confianza no se solapan: la brecha
+entre agricultura (banda superior en torno a 0,25) y los sectores líderes es
+inequívoca, mientras que diferencias dentro del bloque intermedio
+(manufactura, transporte, otras actividades) son estadísticamente menos nítidas.
 
-## Estado de exportaciones
+# Discusión
 
-```{python}
-pd.read_csv("../outputs/tables/publication_table_ecuador_sector_exports_status.csv")
-```
+Los resultados ofrecen un diagnóstico coherente. Por un lado, el HHI muestra que
+Ecuador no ha avanzado hacia una mayor diversificación en lo que va del siglo;
+si acaso, la concentración aumentó moderadamente. Esto es consistente con la
+literatura que documenta la persistencia de estructuras primario-exportadoras en
+economías dependientes de recursos [@sachs1995; @lederman2007; @unctad2019] y con
+la trayectoria no monótona de la diversificación descrita por @imbs2003 y
+@cadot2011, en la que economías de ingreso medio pueden estancar su proceso de
+diversificación.
 
-Las exportaciones aun no entran al DEA porque la evidencia oficial del BCE esta
-organizada por productos y por paises, no por una clasificacion de ramas
-equivalente a la particion ISIC de siete sectores. El pipeline ya esta
-preparado para incorporarlas como segundo producto: si se provee una serie
-verificada por rama en `data/raw/ecuador/sector_exports_by_branch.csv`
-(`factor`, `year`, `exports`) que cubra las siete ramas en la ventana del
-panel, `build_ecuador_sector_metrics.py` la agrega como `output_exports` y el
-DEA recalcula la regla de adecuacion (con 42 DMU admite hasta cuatro variables
-manteniendo el veredicto VALIDO). Mientras no exista ese correlacionador
-oficial, la compuerta permanece cerrada y el estado queda como
-`PENDIENTE_VERIFICAR`.
+Por otro lado, el DEA revela que la eficiencia técnica es marcadamente
+heterogénea entre sectores. Que la agricultura —intensiva en empleo y de baja
+productividad relativa— quede rezagada, mientras minería-utilities opera cerca de
+la frontera, ilustra la tensión central del desarrollo ecuatoriano: los sectores
+más eficientes en el uso de factores no son necesariamente los más diversificados
+ni los que generan más empleo de calidad. La eficiencia de la construcción debe
+leerse con cautela, pues es sensible al ciclo de inversión pública y privada.
 
-# Discusion
+La corrección de Simar–Wilson es metodológicamente decisiva: sin ella, las
+eficiencias DEA sobreestiman sistemáticamente el desempeño y cualquier
+ordenamiento entre sectores cercanos carecería de respaldo inferencial. Al
+delimitar intervalos, el análisis distingue las diferencias robustas de las que
+son producto del ruido muestral.
 
-El HHI ofrece una lectura descriptiva mas estable cuando la particion sectorial
-es suficientemente fina. El DEA de frontera de produccion debe interpretarse
-con cautela: identifica posiciones relativas de eficiencia tecnica bajo
-rendimientos constantes a escala, no relaciones causales. Con 42 DMU el modelo
-satisface la regla de adecuacion, y la inferencia por bootstrap (Simar-Wilson)
-corrige el sesgo al alza y delimita intervalos de confianza, de modo que las
-comparaciones entre ramas se sostienen solo cuando sus bandas no se solapan.
+# Conclusiones e implicaciones de política
 
-# Siguiente paso
+Este trabajo replicó y extendió el marco de @siddiqui2022 para Ecuador,
+integrando una medición de concentración con poder discriminante, un DEA de
+frontera de producción correctamente especificado e inferencia bootstrap. Tres
+conclusiones se desprenden. Primera, Ecuador es una economía moderadamente
+diversificada cuya concentración sectorial aumentó levemente entre 2000 y 2024.
+Segunda, la eficiencia técnica es heterogénea: construcción y minería-utilities
+lideran, agricultura y transporte-comunicación quedan rezagadas. Tercera, la
+corrección por sesgo es indispensable para una lectura inferencial honesta.
 
-El siguiente paso es completar y verificar una base sectorial armonizada en
-`data/raw/ecuador/sector_comparable_metrics.csv` para incorporar empleo,
-productividad, exportaciones o formacion de capital con cobertura temporal y
-sectorial consistente. Hasta cerrar esa evidencia, cualquier fuente adicional
-debe tratarse como `PENDIENTE_VERIFICAR`.
+En términos de política, los hallazgos respaldan una estrategia de
+transformación productiva que (i) eleve la eficiencia de los sectores intensivos
+en empleo —en particular la agricultura— mediante tecnología, capital y
+encadenamientos; (ii) aproveche la eficiencia de los sectores líderes para
+financiar la diversificación, evitando que la concentración se profundice; y
+(iii) fortalezca las capacidades de complejidad económica [@hidalgo2009;
+@hausmann2007] como vía de largo plazo. La política industrial moderna sugiere
+combinar incentivos horizontales con apuestas selectivas sujetas a evaluación
+[@rodrik2004; @benhassine2019].
+
+# Limitaciones y agenda futura
+
+El análisis tiene límites que acotan su interpretación. El DEA identifica
+posiciones relativas de eficiencia técnica bajo rendimientos constantes a
+escala, no relaciones causales. La ventana del panel de eficiencia (2018–2023)
+está condicionada por la cobertura de la FBKF armonizada. Las exportaciones, una
+dimensión central de la diversificación, aún no se incorporan al DEA porque la
+evidencia oficial del BCE se organiza por productos y países, no por ramas
+equivalentes a la partición ISIC; el pipeline ya está preparado para
+incorporarlas como segundo producto en cuanto exista una serie por rama
+verificada. La agenda futura incluye: (i) extender el horizonte temporal del
+panel de eficiencia; (ii) incorporar exportaciones y capital humano como
+productos adicionales; (iii) aplicar la regresión truncada en dos etapas de
+@simar2007 para explicar la (in)eficiencia con covariables; y (iv) complementar
+el análisis con modelos de cambio estructural y series de tiempo sobre el vínculo
+entre diversificación y crecimiento.
+
+# Referencias {.unnumbered}
+
+::: {#refs}
+:::
