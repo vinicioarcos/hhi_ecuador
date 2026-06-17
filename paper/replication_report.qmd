@@ -29,6 +29,7 @@ abstract: |
   transformación productiva.
 keywords: [diversificación sectorial, índice Herfindahl-Hirschman, análisis envolvente de datos, bootstrap Simar-Wilson, Ecuador, eficiencia técnica]
 bibliography: references.bib
+csl: apa.csl
 format:
   html:
     toc: true
