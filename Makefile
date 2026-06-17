@@ -7,7 +7,8 @@ all: ecuador report
 ecuador:
 	python src/ecuador_hhi.py
 	python src/build_ecuador_sector_metrics.py
-	python src/ecuador_panel_dea.py
+	# DEA de frontera + inferencia bootstrap Simar-Wilson (2000 replicas, ~1.5 min).
+	python src/ecuador_panel_dea.py --n-boot 2000
 	python src/build_publication_tables.py
 
 # --- Reporte Quarto (HTML + Typst PDF) ---
