@@ -21,7 +21,7 @@ Calcula el HHI de Ecuador desde ramas ISIC mutuamente excluyentes y verifica con
 Ejecuta y audita los modelos DEA CCR del proyecto, evaluando adecuacion de DMUs respecto de inputs y outputs.
 
 ### Ecuador Extension Agent
-Ejecuta el HHI y DEA para Ecuador usando las salidas de `src/ecuador_hhi.py`, `src/ecuador_dea.py` y `src/ecuador_sector_dea.py`.
+Ejecuta el HHI y DEA para Ecuador usando las salidas de `src/ecuador_hhi.py`, `src/build_ecuador_sector_metrics.py` y `src/ecuador_panel_dea.py`.
 
 ### Publication Tables Agent
 Consolida tablas listas para articulo desde `src/build_publication_tables.py`.

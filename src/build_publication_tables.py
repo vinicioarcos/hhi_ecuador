@@ -15,8 +15,7 @@ def main() -> None:
 
     dea_frames = []
     ecuador_dea_paths = [
-        TABLES / "dea_ecuador_summary.csv",
-        TABLES / "dea_ecuador_sector_summary.csv",
+        TABLES / "dea_ecuador_panel_summary.csv",
     ]
     for ecuador_dea_path in ecuador_dea_paths:
         if ecuador_dea_path.exists():
@@ -24,6 +23,9 @@ def main() -> None:
     if not dea_frames:
         raise SystemExit("No Ecuador DEA summary files found.")
     dea = pd.concat(dea_frames, ignore_index=True, sort=False)
+    for col in ["inputs_used", "outputs_used", "coverage_note"]:
+        if col not in dea.columns:
+            dea[col] = pd.NA
     dea_pub = dea[
         [
             "model",
@@ -35,20 +37,63 @@ def main() -> None:
             "verdict",
             "n_efficient",
             "mean_efficiency",
+            "inputs_used",
+            "outputs_used",
+            "coverage_note",
         ]
     ]
     dea_pub.to_csv(TABLES / "publication_table_ecuador_dea_summary.csv", index=False)
 
-    inventory = pd.DataFrame(
-        [
+    sector_context = Path("data/raw/ecuador/sector_capital_context.csv")
+    if sector_context.exists():
+        pd.read_csv(sector_context).to_csv(
+            TABLES / "publication_table_ecuador_sector_capital_context.csv",
+            index=False,
+        )
+    exports_status = Path("data/raw/ecuador/sector_exports_context_status.csv")
+    if exports_status.exists():
+        pd.read_csv(exports_status).to_csv(
+            TABLES / "publication_table_ecuador_sector_exports_status.csv",
+            index=False,
+        )
+
+    inventory_rows = [
+        {
+            "dataset": "UNSD National Accounts Main Aggregates",
+            "file": "outputs/tables/hhi_ecuador.csv",
+            "source": "UNSD AMA API, GDP and breakdown at current prices",
+            "use": "HHI de Ecuador y base para DEA por ano y por rama",
+        },
+    ]
+    sector_metrics = Path("data/raw/ecuador/sector_comparable_metrics.csv")
+    if sector_metrics.exists():
+        inventory_rows.append(
             {
-                "dataset": "UNSD National Accounts Main Aggregates",
-                "file": "outputs/tables/hhi_ecuador.csv",
-                "source": "UNSD AMA API, GDP and breakdown at current prices",
-                "use": "HHI de Ecuador y base para DEA por ano y por rama",
-            },
-        ]
-    )
+                "dataset": "Ecuador sector comparable metrics",
+                "file": str(sector_metrics),
+                "source": "BCE MEI 2018-2024p",
+                "use": "Variables adicionales para enriquecer el DEA sectorial por rama",
+            }
+        )
+    if sector_context.exists():
+        inventory_rows.append(
+            {
+                "dataset": "Ecuador sector capital context",
+                "file": str(sector_context),
+                "source": "BCE FBKF 1965-2024p",
+                "use": "Contexto de formacion bruta de capital fijo por rama armonizada",
+            }
+        )
+    if exports_status.exists():
+        inventory_rows.append(
+            {
+                "dataset": "Ecuador sector exports status",
+                "file": str(exports_status),
+                "source": "BCE Comercio Exterior de Bienes",
+                "use": "Estado metodologico de exportaciones por rama para futura extension",
+            }
+        )
+    inventory = pd.DataFrame(inventory_rows)
     inventory.to_csv(TABLES / "publication_data_inventory.csv", index=False)
 
     print("Publication tables written to outputs/tables.")

@@ -6,8 +6,8 @@ all: ecuador report
 # --- Extension Ecuador: HHI por rama ISIC (requiere internet) ---
 ecuador:
 	python src/ecuador_hhi.py
-	python src/ecuador_dea.py
-	python src/ecuador_sector_dea.py
+	python src/build_ecuador_sector_metrics.py
+	python src/ecuador_panel_dea.py
 	python src/build_publication_tables.py
 
 # --- Reporte Quarto (HTML + Typst PDF) ---

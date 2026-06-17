@@ -17,7 +17,7 @@ def classify_hhi(value: float) -> str:
 
 
 def compute_hhi(df: pd.DataFrame,
-                value_col: str = "gross_fixed_capital_formation_million_aed",
+                value_col: str = "value_added",
                 year_col: str = "year",
                 sector_col: str = "sector") -> pd.DataFrame:
     required = {year_col, sector_col, value_col}
@@ -51,7 +51,7 @@ def load_paper_table() -> pd.DataFrame:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Compute HHI for sectoral diversification.")
     parser.add_argument("--input", type=str, default=None,
-                        help="CSV with year, sector, gross_fixed_capital_formation_million_aed.")
+                        help="CSV with year, sector, value_added.")
     parser.add_argument("--paper-table", action="store_true",
                         help="Print the benchmark HHI table if available in data/processed.")
     args = parser.parse_args()

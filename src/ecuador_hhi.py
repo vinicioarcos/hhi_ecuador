@@ -14,8 +14,11 @@ Fuente: UNSD AMA API, "GDP and its breakdown at current prices in National
 currency" (https://unstats.un.org/unsd/amaapi/api/file/1).
 """
 import argparse
+import hashlib
 import io
+import json
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -33,6 +36,45 @@ except ImportError:
 AMA_URL = "https://unstats.un.org/unsd/amaapi/api/file/1"
 COUNTRY = "Ecuador"
 
+# Snapshot local de la fuente UNSD para garantizar reproducibilidad: el HHI no
+# debe depender de que la API este disponible ni cambiar en silencio si UNSD
+# revisa la serie. El Excel se guarda una vez y se reutiliza salvo --refresh.
+CACHE_DIR = PROJECT_ROOT / "data" / "raw" / "unsd"
+CACHE_FILE = CACHE_DIR / "ama_gdp_breakdown.xlsx"
+CACHE_META = CACHE_DIR / "ama_gdp_breakdown.meta.json"
+
+
+def _load_source_bytes(refresh: bool = False) -> bytes:
+    """Return the UNSD AMA workbook bytes, using a local snapshot when present.
+
+    Downloads from the API only if the cache is missing or ``refresh`` is set,
+    recording url, timestamp and sha256 so the snapshot is auditable.
+    """
+    if CACHE_FILE.exists() and not refresh:
+        print(f"Usando snapshot local: {CACHE_FILE}")
+        return CACHE_FILE.read_bytes()
+
+    print(f"Descargando fuente UNSD: {AMA_URL}")
+    resp = requests.get(AMA_URL, timeout=120)
+    resp.raise_for_status()
+    content = resp.content
+
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    CACHE_FILE.write_bytes(content)
+    CACHE_META.write_text(
+        json.dumps(
+            {
+                "url": AMA_URL,
+                "downloaded_utc": datetime.now(timezone.utc).isoformat(),
+                "sha256": hashlib.sha256(content).hexdigest(),
+                "bytes": len(content),
+            },
+            indent=2,
+        )
+    )
+    print(f"Snapshot guardado: {CACHE_FILE}")
+    return content
+
 # Particion mutuamente excluyente y exhaustiva del Valor Agregado.
 # "Mining, Manufacturing, Utilities (C-E)" incluye Manufacturing (D); para no
 # duplicar, separamos: mining_utilities = (C-E) - (D).
@@ -45,11 +87,10 @@ ISIC_I = "Transport, storage and communication (ISIC I)"
 ISIC_JP = "Other Activities (ISIC J-P)"
 
 
-def fetch_ecuador_value_added() -> pd.DataFrame:
+def fetch_ecuador_value_added(refresh: bool = False) -> pd.DataFrame:
     """Devuelve VAB por rama en formato largo: year, sector, value."""
-    resp = requests.get(AMA_URL, timeout=120)
-    resp.raise_for_status()
-    df = pd.read_excel(io.BytesIO(resp.content), sheet_name=0, header=2)
+    content = _load_source_bytes(refresh=refresh)
+    df = pd.read_excel(io.BytesIO(content), sheet_name=0, header=2)
     ec = df[df["Country"] == COUNTRY].set_index("IndicatorName")
     years = [c for c in df.columns if isinstance(c, int)]
 
@@ -70,7 +111,7 @@ def fetch_ecuador_value_added() -> pd.DataFrame:
         .rename_axis("year")
         .reset_index()
         .melt(id_vars="year", var_name="sector",
-              value_name="gross_fixed_capital_formation_million_aed")
+              value_name="value_added")
     )
     long["year"] = long["year"].astype(int)
     return long.dropna()
@@ -80,10 +121,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--start", type=int, default=2000)
     parser.add_argument("--end", type=int, default=2024)
+    parser.add_argument("--refresh", action="store_true",
+                        help="Vuelve a descargar el snapshot UNSD y actualiza el cache local.")
     args = parser.parse_args()
 
-    print(f"Descargando VAB por rama (UNSD) para {COUNTRY}...")
-    data = fetch_ecuador_value_added()
+    print(f"Obteniendo VAB por rama (UNSD) para {COUNTRY}...")
+    data = fetch_ecuador_value_added(refresh=args.refresh)
     data = data[(data["year"] >= args.start) & (data["year"] <= args.end)]
     n_sectors = data["sector"].nunique()
     print(f"Sectores: {n_sectors} | piso HHI = 1/{n_sectors} = {1/n_sectors:.3f}")
@@ -97,8 +140,8 @@ def main() -> None:
     output_dir = PROJECT_ROOT / "outputs" / "tables"
     output_dir.mkdir(parents=True, exist_ok=True)
     # Guardar tambien las participaciones para trazabilidad.
-    total = data.groupby("year")["gross_fixed_capital_formation_million_aed"].transform("sum")
-    data = data.assign(share=data["gross_fixed_capital_formation_million_aed"] / total)
+    total = data.groupby("year")["value_added"].transform("sum")
+    data = data.assign(share=data["value_added"] / total)
     shares_wide = data.pivot(index="year", columns="sector", values="share").round(4)
     merged = shares_wide.merge(out.set_index("year"), left_index=True, right_index=True).reset_index()
     merged.to_csv(output_dir / "hhi_ecuador.csv", index=False)

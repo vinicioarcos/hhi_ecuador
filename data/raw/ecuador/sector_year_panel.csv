@@ -1,0 +1,43 @@
+dmu,factor,year,input_employment,output_value_added,input_capital_fbkf
+"Agriculture, forestry & fishing_2018","Agriculture, forestry & fishing",2018,2238446.0,8216831.0,2404559.9015
+"Agriculture, forestry & fishing_2019","Agriculture, forestry & fishing",2019,2473910.0,8378234.0,2456781.1356
+"Agriculture, forestry & fishing_2020","Agriculture, forestry & fishing",2020,2581897.0,8039038.0,2178546.3681
+"Agriculture, forestry & fishing_2021","Agriculture, forestry & fishing",2021,2420066.5,8660069.0,2562164.1759
+"Agriculture, forestry & fishing_2022","Agriculture, forestry & fishing",2022,2309825.0,8585768.0,2876279.2461
+"Agriculture, forestry & fishing_2023","Agriculture, forestry & fishing",2023,2392385.0,9725481.0,2804244.9878
+Construction_2018,Construction,2018,394563.0,5503806.0,568772.4129
+Construction_2019,Construction,2019,415663.0,5124577.0,373760.1973
+Construction_2020,Construction,2020,327990.0,3618265.0,269014.8554
+Construction_2021,Construction,2021,357274.0,4325575.0,283574.3452
+Construction_2022,Construction,2022,372535.0,5028430.0,440702.7305
+Construction_2023,Construction,2023,366922.0,5348651.0,413944.0774
+Manufacturing_2018,Manufacturing,2018,1182896.0,14365969.0,2647930.0707
+Manufacturing_2019,Manufacturing,2019,1239919.0,13641522.0,2996632.5776
+Manufacturing_2020,Manufacturing,2020,1169086.0,12406730.0,2401576.7097
+Manufacturing_2021,Manufacturing,2021,1205845.0,13944041.0,2724995.6193
+Manufacturing_2022,Manufacturing,2022,1204565.0,14963440.0,3217753.7895
+Manufacturing_2023,Manufacturing,2023,1269421.0,16017271.0,3398009.1268
+Mining & utilities_2018,Mining & utilities,2018,123705.0,10240186.0,2787051.5130000003
+Mining & utilities_2019,Mining & utilities,2019,110880.5,9908688.0,3008570.1872
+Mining & utilities_2020,Mining & utilities,2020,114416.0,6964633.0,2300340.2256
+Mining & utilities_2021,Mining & utilities,2021,140801.0,11043314.0,2242536.0922
+Mining & utilities_2022,Mining & utilities,2022,170582.0,14364477.0,2511086.4576
+Mining & utilities_2023,Mining & utilities,2023,163302.0,12111077.0,2337590.4357000003
+Other activities_2018,Other activities,2018,1757137.0,37692280.0,11109791.5396
+Other activities_2019,Other activities,2019,1712096.5,38170356.0,10174905.3212
+Other activities_2020,Other activities,2020,1742252.0,36230282.0,7465592.2844
+Other activities_2021,Other activities,2021,1643159.5,37120599.0,9501541.6208
+Other activities_2022,Other activities,2022,1715794.0,39500404.0,10218068.287099998
+Other activities_2023,Other activities,2023,1739816.0,41715550.0,10429566.9965
+"Trade, restaurants & hotels_2018","Trade, restaurants & hotels",2018,2110678.0,16679500.0,1478318.5687000002
+"Trade, restaurants & hotels_2019","Trade, restaurants & hotels",2019,1908813.0,16797337.0,1473923.1661999999
+"Trade, restaurants & hotels_2020","Trade, restaurants & hotels",2020,1879790.0,14730727.000000002,1001770.3992999999
+"Trade, restaurants & hotels_2021","Trade, restaurants & hotels",2021,1936109.0,17526855.0,1368794.5843
+"Trade, restaurants & hotels_2022","Trade, restaurants & hotels",2022,1962391.0,19556623.0,1756990.5249
+"Trade, restaurants & hotels_2023","Trade, restaurants & hotels",2023,1872484.0,20253126.0,2122502.1017
+Transport & communication_2018,Transport & communication,2018,582422.0,7922530.0,1561713.9937
+Transport & communication_2019,Transport & communication,2019,586253.0,8071648.0,1739268.415
+Transport & communication_2020,Transport & communication,2020,557824.0,7171118.0,1634575.1576
+Transport & communication_2021,Transport & communication,2021,559992.0,7298774.0,1927560.5624
+Transport & communication_2022,Transport & communication,2022,558610.0,7753820.0,2878791.9644
+Transport & communication_2023,Transport & communication,2023,550993.0,7752874.0,2499636.2741
