@@ -44,6 +44,25 @@ def main() -> None:
     ]
     dea_pub.to_csv(TABLES / "publication_table_ecuador_dea_summary.csv", index=False)
 
+    bootstrap_path = TABLES / "dea_ecuador_panel_bootstrap.csv"
+    if bootstrap_path.exists():
+        boot = pd.read_csv(bootstrap_path)
+        boot_pub = boot[
+            [
+                "dmu",
+                "factor",
+                "year",
+                "efficiency_ccr_input",
+                "bias",
+                "efficiency_bias_corrected",
+                "ci_low",
+                "ci_high",
+            ]
+        ].round(4)
+        boot_pub.to_csv(
+            TABLES / "publication_table_ecuador_dea_bootstrap.csv", index=False
+        )
+
     sector_context = Path("data/raw/ecuador/sector_capital_context.csv")
     if sector_context.exists():
         pd.read_csv(sector_context).to_csv(

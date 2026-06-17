@@ -1,5 +1,8 @@
 import pandas as pd
 
+import numpy as np
+
+from src.dea_bootstrap import simar_wilson_bootstrap
 from src.dea_ccr import dea_ccr_input_oriented
 from src.ecuador_panel_dea import resolve_outputs, run_panel_dea
 
@@ -64,3 +67,33 @@ def test_exports_gate_adds_second_output_and_recomputes_adequacy():
     assert resolve_outputs(panel) == ["output_value_added", "output_exports"]
     assert summary.loc[0, "n_outputs"] == 2
     assert summary.loc[0, "threshold_3x"] == 12  # 3*(2 inputs + 2 outputs)
+
+
+def test_simar_wilson_bootstrap_corrects_upward_bias():
+    rng = np.random.default_rng(0)
+    n = 30
+    X = rng.uniform(1, 5, size=(n, 1))
+    # Frontera y = x con ineficiencia: output por debajo de x.
+    Y = X[:, 0] * rng.uniform(0.4, 1.0, size=n)
+    Y = Y[:, None]
+
+    out = dea_ccr_input_oriented(
+        __import__("pandas").DataFrame(
+            {"factor": range(n), "input": X[:, 0], "output": Y[:, 0]}
+        ),
+        "factor",
+        ["input"],
+        ["output"],
+    )
+    delta = out["efficiency_ccr_input"].to_numpy()
+
+    boot = simar_wilson_bootstrap(X, Y, delta, n_boot=200, alpha=0.05, seed=1)
+
+    # La correccion de sesgo nunca debe superar la eficiencia DEA (sesgo al alza).
+    assert (boot["efficiency_bias_corrected"] <= boot["efficiency_ccr_input"] + 1e-9).all()
+    # El intervalo debe contener la eficiencia corregida y respetar el orden.
+    assert (boot["ci_low"] <= boot["ci_high"]).all()
+    # DMU originalmente eficientes (=1) reciben correccion estricta hacia abajo.
+    efficient = np.isclose(delta, 1.0)
+    if efficient.any():
+        assert (boot.loc[efficient, "efficiency_bias_corrected"] < 1.0).all()

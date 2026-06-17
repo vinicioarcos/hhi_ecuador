@@ -21,6 +21,7 @@ que el modelo deja de estar subespecificado.
 Fuente: BCE MEI 2018-2024p (empleo, VAB) y BCE FBKF 1965-2024p (capital),
 armonizados a las siete ramas por `src/build_ecuador_sector_metrics.py`.
 """
+import argparse
 from pathlib import Path
 import sys
 
@@ -29,6 +30,7 @@ import pandas as pd
 sys.path.append(str(Path(__file__).resolve().parent))
 from config import DATA_RAW, TABLES
 from dea_ccr import dea_ccr_input_oriented
+from dea_bootstrap import simar_wilson_bootstrap
 
 PANEL_FILE = DATA_RAW / "ecuador" / "sector_year_panel.csv"
 INPUTS = ["input_employment", "input_capital_fbkf"]
@@ -101,7 +103,31 @@ def run_panel_dea(data: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     return results, summary, by_sector
 
 
+def run_bootstrap(data: pd.DataFrame, results: pd.DataFrame,
+                  n_boot: int = 2000, alpha: float = 0.05) -> pd.DataFrame:
+    """Simar-Wilson bias correction and confidence intervals for the panel DEA."""
+    outputs = resolve_outputs(data)
+    X = data[INPUTS].to_numpy(dtype=float)
+    Y = data[outputs].to_numpy(dtype=float)
+    delta = data.merge(results[["dmu", "efficiency_ccr_input"]], on="dmu")[
+        "efficiency_ccr_input"
+    ].to_numpy(dtype=float)
+
+    boot = simar_wilson_bootstrap(X, Y, delta, n_boot=n_boot, alpha=alpha)
+    boot.insert(0, "dmu", data["dmu"].to_numpy())
+    boot.insert(1, "factor", data["factor"].to_numpy())
+    boot.insert(2, "year", data["year"].to_numpy())
+    return boot.sort_values("efficiency_bias_corrected", ascending=False)
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--n-boot", type=int, default=2000,
+                        help="Replicas del bootstrap Simar-Wilson (default 2000).")
+    parser.add_argument("--alpha", type=float, default=0.05,
+                        help="Nivel para el intervalo de confianza 1-alpha (default 0.05).")
+    args = parser.parse_args()
+
     if not PANEL_FILE.exists():
         raise SystemExit(
             f"{PANEL_FILE} no existe. Ejecute src/build_ecuador_sector_metrics.py primero."
@@ -110,21 +136,36 @@ def main() -> None:
     data = pd.read_csv(PANEL_FILE)
     results, summary, by_sector = run_panel_dea(data)
 
-    TABLES.mkdir(parents=True, exist_ok=True)
-    results_path = TABLES / "dea_results_ecuador_production_frontier.csv"
-    summary_path = TABLES / "dea_ecuador_panel_summary.csv"
-    sector_path = TABLES / "dea_ecuador_panel_by_sector.csv"
-    results.to_csv(results_path, index=False)
-    summary.to_csv(summary_path, index=False)
-    by_sector.to_csv(sector_path, index=False)
-
     print("=== DEA Ecuador: frontera de producción (sector-año) ===")
     print(summary.to_string(index=False))
     print("\nEficiencia media por rama:")
     print(by_sector.round(4).to_string(index=False))
+
+    print(f"\nBootstrap Simar-Wilson ({args.n_boot} replicas)...")
+    boot = run_bootstrap(data, results, n_boot=args.n_boot, alpha=args.alpha)
+    summary["mean_efficiency_bias_corrected"] = round(
+        float(boot["efficiency_bias_corrected"].mean()), 4
+    )
+    summary["ci_level"] = 1 - args.alpha
+    summary["n_boot"] = args.n_boot
+
+    TABLES.mkdir(parents=True, exist_ok=True)
+    results_path = TABLES / "dea_results_ecuador_production_frontier.csv"
+    summary_path = TABLES / "dea_ecuador_panel_summary.csv"
+    sector_path = TABLES / "dea_ecuador_panel_by_sector.csv"
+    boot_path = TABLES / "dea_ecuador_panel_bootstrap.csv"
+    results.to_csv(results_path, index=False)
+    summary.to_csv(summary_path, index=False)
+    by_sector.to_csv(sector_path, index=False)
+    boot.to_csv(boot_path, index=False)
+
+    print("\nEficiencias corregidas por sesgo (IC bootstrap), top y bottom:")
+    cols = ["dmu", "efficiency_ccr_input", "efficiency_bias_corrected", "ci_low", "ci_high"]
+    print(pd.concat([boot[cols].head(5), boot[cols].tail(5)]).round(4).to_string(index=False))
     print(f"\nGuardado: {results_path}")
     print(f"Guardado: {summary_path}")
     print(f"Guardado: {sector_path}")
+    print(f"Guardado: {boot_path}")
 
 
 if __name__ == "__main__":

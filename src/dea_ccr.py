@@ -61,6 +61,43 @@ def dea_ccr_input_oriented(data: pd.DataFrame, dmu_col: str, input_cols: list[st
     return pd.DataFrame(results)
 
 
+def ccr_efficiency_against_reference(
+    x_o: np.ndarray,
+    y_o: np.ndarray,
+    X_ref: np.ndarray,
+    Y_ref: np.ndarray,
+) -> float:
+    """Input-oriented CCR efficiency of a single point against a reference set.
+
+    Solves min theta s.t. X_ref lambda <= theta x_o, Y_ref lambda >= y_o,
+    lambda >= 0. Unlike :func:`dea_ccr_input_oriented`, the evaluated point need
+    not belong to the reference frontier, which is what the Simar-Wilson
+    bootstrap requires (original points scored against a pseudo-frontier).
+    """
+    n = X_ref.shape[0]
+    c = np.zeros(n + 1)
+    c[-1] = 1.0
+
+    A_ub = []
+    b_ub = []
+    for i in range(X_ref.shape[1]):
+        row = np.zeros(n + 1)
+        row[:n] = X_ref[:, i]
+        row[-1] = -x_o[i]
+        A_ub.append(row)
+        b_ub.append(0.0)
+    for r in range(Y_ref.shape[1]):
+        row = np.zeros(n + 1)
+        row[:n] = -Y_ref[:, r]
+        row[-1] = 0.0
+        A_ub.append(row)
+        b_ub.append(-y_o[r])
+
+    bounds = [(0, None)] * n + [(0, None)]
+    res = linprog(c, A_ub=np.array(A_ub), b_ub=np.array(b_ub), bounds=bounds, method="highs")
+    return float(res.x[-1]) if res.success else np.nan
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run CCR DEA input-oriented model.")
     parser.add_argument("--input", required=True, help="CSV with DMU, inputs and outputs.")
