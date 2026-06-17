@@ -1,0 +1,31 @@
+---
+title: "Replica Afzal UAE"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+---
+
+## Paper base
+
+Siddiqui and Afzal on UAE sectoral diversification toward a knowledge-based economy
+
+## Replica
+
+- HHI recomputation
+- Comparison against published Table 3
+- DEA CCR audit
+
+## Extension
+
+- Ecuador HHI by ISIC branches
+- Ecuador DEA exercises
+
+## Revista objetivo
+
+- MLAJ
+- Latindex: `PENDIENTE_VERIFICAR`
+
+## Regla
+
+No reportar nada que no salga de `outputs/` o `paper/`.

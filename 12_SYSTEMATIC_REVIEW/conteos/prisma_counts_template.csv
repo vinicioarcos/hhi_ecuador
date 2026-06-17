@@ -1,0 +1,4 @@
+stage,count,status,notes
+identified_records,PENDIENTE_VERIFICAR,PENDING,Await formal export from databases
+screened_records,PENDIENTE_VERIFICAR,PENDING,Targeted review not fully counted yet
+included_studies,PENDIENTE_VERIFICAR,PENDING,Populate once screening log is complete

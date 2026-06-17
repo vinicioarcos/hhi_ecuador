@@ -1,0 +1,33 @@
+---
+title: "Companion Report: Replica Afzal UAE"
+format:
+  html:
+    toc: true
+execute:
+  echo: true
+  warning: false
+---
+
+# Project scope
+
+This companion report documents the same topic as the core report in `paper/replication_report.qmd`: replication of Siddiqui and Afzal on UAE sectoral diversification, DEA audit, and Ecuador extension.
+
+# Core files
+
+- `src/hhi.py`
+- `src/compare_hhi.py`
+- `src/run_dea_analysis.py`
+- `src/ecuador_hhi.py`
+- `src/ecuador_dea.py`
+- `src/ecuador_sector_dea.py`
+- `src/build_publication_tables.py`
+
+# Journal target
+
+Target journal: MLAJ.
+
+Latindex inclusion: `PENDIENTE_VERIFICAR`.
+
+# Integrity note
+
+Do not report any metric not present in `outputs/` or `paper/`.
