@@ -1,0 +1,74 @@
+---
+import Layout from "../components/Layout.astro";
+
+const milestones = [
+  ["HHI Ecuador", "Activo"],
+  ["DEA por anos", "Activo"],
+  ["DEA por ramas", "Activo"],
+  ["Pipeline", "Ecuador-only"],
+  ["Revista objetivo", "MLAJ"],
+  ["Latindex", "PENDIENTE_VERIFICAR"]
+];
+
+const sections = [
+  ["Literatura", "Literatura complementaria sobre diversificacion, transformacion estructural y concentracion sectorial."],
+  ["HHI", "HHI de Ecuador con siete ramas ISIC mutuamente excluyentes."],
+  ["DEA", "Modelos CCR parsimoniosos por anos y por ramas economicas."],
+  ["Datos", "UNSD National Accounts Main Aggregates como fuente base reproducible."],
+  ["Submission", "MLAJ como revista objetivo; indexacion Latindex pendiente de verificacion."]
+];
+---
+<Layout title="Dashboard Ecuador HHI/DEA">
+  <section class="hero">
+    <div class="status">Proyecto Ecuador-only</div>
+    <h1>Diversificacion sectorial de Ecuador</h1>
+    <p>
+      Monitoreo del HHI por ramas ISIC y de los ejercicios DEA de transicion
+      productiva para Ecuador. El repositorio fue recortado para dejar fuera
+      lineas ajenas y mantener un alcance tematico unico.
+    </p>
+  </section>
+
+  <section class="band">
+    <h2>Avance</h2>
+    <div class="grid">
+      {milestones.map(([label, value]) => (
+        <article class="panel">
+          <h3>{label}</h3>
+          <p>{value}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="band">
+    <h2>Modulos</h2>
+    <div class="grid">
+      {sections.map(([label, text]) => (
+        <article class="panel">
+          <h3>{label}</h3>
+          <p>{text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="band">
+    <h2>Rutas clave</h2>
+    <table class="panel">
+      <thead>
+        <tr>
+          <th>Componente</th>
+          <th>Ruta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Codigo principal</td><td><span class="mono">src/</span></td></tr>
+        <tr><td>Reporte principal</td><td><span class="mono">paper/replication_report.qmd</span></td></tr>
+        <tr><td>Literatura</td><td><span class="mono">01_LITERATURA/PAPERS/</span></td></tr>
+        <tr><td>Resultados</td><td><span class="mono">outputs/tables/ y outputs/figures/</span></td></tr>
+        <tr><td>Submission</td><td><span class="mono">07_SUBMISSION/</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+</Layout>

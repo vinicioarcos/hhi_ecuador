@@ -1,0 +1,3 @@
+- Replica el HHI publicado por Siddiqui y Afzal para el UAE.
+- Audita la adecuacion metodologica del DEA CCR del paper base.
+- Extiende el analisis de diversificacion a Ecuador con datos comparables.

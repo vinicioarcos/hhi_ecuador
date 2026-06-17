@@ -1,0 +1,32 @@
+---
+title: "Ecuador HHI/DEA"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+---
+
+## Tema
+
+Diversificacion sectorial de Ecuador con HHI por ramas ISIC y DEA CCR
+
+## HHI
+
+- Siete ramas mutuamente excluyentes
+- Serie anual 2000-2024
+- Clasificacion reproducible
+
+## DEA
+
+- DEA por anos
+- DEA por ramas
+- Regla de adecuacion `n_DMU >= 3(m+s)`
+
+## Revista objetivo
+
+- MLAJ
+- Latindex: `PENDIENTE_VERIFICAR`
+
+## Regla
+
+No reportar nada que no salga de `outputs/` o `paper/`.

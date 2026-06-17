@@ -1,92 +1,98 @@
-# REPLICA_AFZAL_2021_UAE
+# ECUADOR_HHI_DEA
 
-Carpeta para replicar y extender el paper:
+## Pregunta del proyecto
 
-**Siddiqui, S. A. & Afzal, M. N. I. (2022). _Sectoral diversification of UAE toward a knowledge-based economy_. Review of Economics and Political Science, 7(3), 177–193.**
+El proyecto estudia la diversificacion sectorial de Ecuador con dos herramientas
+reproducibles:
 
-## Qué replica
+1. HHI por ramas ISIC a partir del Valor Agregado Bruto de la base UNSD.
+2. Modelos DEA CCR exploratorios y sectoriales para evaluar transicion
+   productiva entre ramas.
 
-El paper combina tres componentes:
+## Estructura operativa
 
-1. Visualización de indicadores de economía del conocimiento.
-2. Cálculo del índice Herfindahl-Hirschman, HHI, usando formación bruta de capital fijo por 18 sectores de Emiratos Árabes Unidos, 2010–2017.
-3. DEA CCR para evaluar eficiencia relativa de pilares de economía del conocimiento: régimen económico-institucional, innovación, TIC y educación/capital humano.
-
-## Estructura
+El nucleo reproducible vive en:
 
 ```text
-REPLICA_AFZAL_2021_UAE/
-├── data/
-│   ├── raw/
-│   │   ├── hhi/                 # Plantilla para datos sectoriales Bayanat/UAE Open Data
-│   │   └── wdi/                 # Datos descargados desde World Bank API
-│   └── processed/               # Datos limpios y resultados intermedios
-├── literature/                  # PDF base y referencias
-├── notebooks/                   # Notebook reproducible
-├── outputs/
-│   ├── figures/
-│   └── tables/
-├── paper/                       # Reporte Quarto/Pandoc
-├── src/                         # Código Python
-├── tests/                       # Pruebas básicas
-├── docs/                        # Notas metodológicas
-├── tasks/                       # Roadmap de replicación
-└── prompts/                     # Prompts para Codex/Claude/Gemini
+src/            Scripts Python para HHI, DEA y tablas publicables de Ecuador
+data/           Datos auxiliares del flujo reproducible
+outputs/        Tablas y figuras generadas
+paper/          Reporte Quarto principal
+tests/          Pruebas basicas
 ```
 
-## Instalación
+La estructura numerada se usa como capa de gobierno, literatura, submission y monitoreo:
+
+```text
+00_GOBIERNO/              Roadmap, bitacora y control del proyecto
+01_LITERATURA/            PDFs, fichas, matrices y referencias
+02_DATOS/                 Inventarios y notas del flujo reproducible
+03_CODIGO/                Wrappers, Stata auxiliar y utilidades del proyecto
+04_RESULTADOS/            Resultados compilados y verificaciones
+05_MANUSCRITO/            Manuscrito base ES/EN y anexos
+06_JOURNAL_RADAR/         Revista objetivo y estrategia editorial
+07_SUBMISSION/            Cover letter, highlights y declaraciones
+08_DASHBOARD_ASTRO/       Dashboard web del avance del proyecto
+09_REPORTS_QUARTO/        Reporte reproducible complementario
+10_SLIDES/                Slides para defensa y congreso
+11_PANDOC/                Comandos de exportacion
+12_SYSTEMATIC_REVIEW/     Protocolo y matriz de literatura sobre diversificacion
+13_CONFERENCE_RADAR/      Congresos y seminarios
+14_CITATION_ENGINE/       BibTeX, APA 7 y matriz de citas
+15_AGENTS/                Roles academicos y tecnicos
+16_PROMPTS/               Prompts especializados
+17_AUTOMATION/            Pipeline completo
+18_COMMON_PROTOCOLS/      Protocolos de integridad y no fabricacion
+19_POLICY_BRIEF/          Policy brief del proyecto
+20_AI_EXPOSURE_LINK/      Reservado para extensiones futuras
+```
+
+## Instalacion
 
 ```bash
-cd REPLICA_AFZAL_2021_UAE
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-En Windows:
+## Flujo reproducible
 
-```powershell
-cd REPLICA_AFZAL_2021_UAE
-python -m venv .venv
-.\.venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-## Flujo mínimo
-
-Primero calcula/valida HHI con los valores publicados:
+Pipeline principal:
 
 ```bash
-python src/hhi.py --paper-table
+make all
 ```
 
-Luego genera figuras:
+Etapas:
 
 ```bash
-python src/visualize.py
+make ecuador
+make report
+make test
 ```
 
-Para DEA con datos propios:
+Wrapper equivalente:
 
 ```bash
-python src/dea_ccr.py --input data/processed/dea_input.csv --output outputs/tables/dea_efficiency.csv
+bash 17_AUTOMATION/run_pipeline.sh
 ```
 
-## Dato importante
+## Datos
 
-La carpeta incluye una plantilla para cargar los datos de formación bruta de capital fijo por sector. No inventa los datos sectoriales originales. Eso sería cocina econométrica con humo, y aquí no vendemos parrilladas.
+Fuentes actualmente contempladas:
 
-Para replicación exacta del HHI, descargue los datos de UAE Open Data/Bayanat indicados en el paper y complete:
+- `outputs/tables/hhi_ecuador.csv`: participaciones por rama, HHI y
+  clasificacion anual para Ecuador.
+- `outputs/tables/dea_ecuador_dataset.csv`: dataset DEA con anos como DMU.
+- `outputs/tables/dea_ecuador_sector_dataset.csv`: dataset DEA con ramas como
+  DMU.
 
-`data/raw/hhi/gfcf_sector_template.csv`
+La tabla inventario para el manuscrito se genera con `src/build_publication_tables.py`.
 
-con columnas:
+## Regla de integridad
 
-```text
-year, sector, gross_fixed_capital_formation_million_aed
-```
+No inventar resultados, coeficientes, rankings, indexaciones ni cuartiles. Toda cifra debe salir de `outputs/`, `paper/` o fuentes verificables. Cuando falte verificacion usar `PENDIENTE_VERIFICAR`.
 
-## Extensión sugerida para Ecuador
+## Revista objetivo
 
-La misma arquitectura puede adaptarse a Ecuador usando cuentas nacionales por rama de actividad del BCE, exportaciones por producto o empleo por rama ENEMDU. El HHI se mantiene igual; cambia la fuente y la unidad de análisis.
-# hhi_ecuador
+La revista objetivo indicada por el usuario es **Multidisciplinary Latin American Journal (MLAJ)**. Su posible vinculacion con Latindex queda `PENDIENTE_VERIFICAR` hasta contrastar la indexacion oficial. Ver [06_JOURNAL_RADAR/mlaj_target_journal.md](/mnt/windows/1.-CODIGO/2.-PAPERS/REPLICA_AFZAL_2021_UAE/06_JOURNAL_RADAR/mlaj_target_journal.md).

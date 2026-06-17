@@ -1,0 +1,14 @@
+name: replica-afzal-uae
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pandas>=2.2
+  - numpy>=1.26
+  - matplotlib>=3.8
+  - scipy>=1.12
+  - requests>=2.31
+  - pyyaml>=6.0
+  - openpyxl>=3.1
+  - jupyter
+  - pytest

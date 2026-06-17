@@ -1,0 +1,190 @@
+---
+title: "Diversificacion Sectorial de Ecuador"
+subtitle: "HHI por ramas ISIC y ejercicios DEA de transicion productiva"
+author: "Econ. Vinicio Arcos"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    embed-resources: true
+  typst:
+    toc: true
+    number-sections: true
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import pandas as pd
+```
+
+# Resumen
+
+Este reporte estudia la diversificacion sectorial de Ecuador con una base
+reproducible. El HHI se calcula con siete ramas ISIC mutuamente excluyentes a
+partir del Valor Agregado Bruto de la base UNSD. El analisis se complementa
+con un DEA CCR de frontera de produccion cuya unidad de decision es el par
+sector-ano y que modela trabajo y capital como insumos que generan valor
+agregado.
+
+# Datos
+
+La tabla de inventario se genera desde el pipeline del proyecto.
+
+```{python}
+pd.read_csv("../outputs/tables/publication_data_inventory.csv")
+```
+
+# Metodologia
+
+## HHI
+
+Para cada ano:
+
+$$
+HHI_t = \sum_i \left(\frac{X_{it}}{X_t}\right)^2
+$$
+
+donde \(X_{it}\) es el valor de la rama \(i\) en el ano \(t\).
+
+## DEA CCR
+
+El proyecto usa un modelo CCR orientado a insumos y reporta como control la
+regla de adecuacion:
+
+$$
+n_{DMU} \geq 3(m+s)
+$$
+
+donde \(m\) es el numero de inputs y \(s\) el numero de outputs.
+
+El DEA se especifica como una frontera de produccion genuina: la unidad de
+decision es el par sector-ano y se modela trabajo (empleo) y capital (FBKF)
+como insumos independientes que producen valor agregado. Esta eleccion corrige
+dos problemas de versiones previas: (i) un modelo con un solo insumo y un solo
+producto colapsa a un ranking del cociente producto/insumo, y (ii) usar la
+productividad como producto introduce dependencia mecanica con el insumo, pues
+la productividad es exactamente ese cociente. Agrupar las siete ramas en la
+ventana comun 2018-2023 eleva el numero de DMU a 42, holgadamente por encima
+del umbral de adecuacion.
+
+# HHI de Ecuador
+
+```{python}
+hhi_ecuador = pd.read_csv("../outputs/tables/publication_table_ecuador_hhi.csv")
+hhi_ecuador
+```
+
+La particion de siete ramas evita el problema de pisos artificiales asociado a
+clasificaciones demasiado agregadas. La serie anual permite identificar cambios
+de concentracion sin imponer por construccion una clasificacion extrema.
+
+```{python}
+pd.DataFrame({
+    "periodo": ["2000-2024"],
+    "hhi_minimo": [hhi_ecuador["hhi"].min()],
+    "hhi_maximo": [hhi_ecuador["hhi"].max()],
+    "hhi_ultimo": [hhi_ecuador.loc[hhi_ecuador["year"].idxmax(), "hhi"]],
+})
+```
+
+![Ecuador HHI trend](../outputs/figures/hhi_ecuador.png)
+
+# DEA de Ecuador
+
+```{python}
+dea_summary = pd.read_csv("../outputs/tables/publication_table_ecuador_dea_summary.csv")
+dea_summary
+```
+
+## DEA de frontera de produccion (sector-ano)
+
+```{python}
+pd.read_csv("../outputs/tables/dea_results_ecuador_production_frontier.csv")
+```
+
+Cada DMU es un par sector-ano. Los insumos son empleo (trabajo) y FBKF
+(capital), dos factores de produccion independientes provenientes del BCE
+(MEI 2018-2024 y FBKF 1965-2024), y el producto es el valor agregado por rama.
+La eficiencia mide que tan cerca esta cada sector-ano de la frontera definida
+por las combinaciones observadas de trabajo y capital que generan mas valor
+agregado.
+
+### Eficiencia media por rama
+
+```{python}
+pd.read_csv("../outputs/tables/dea_ecuador_panel_by_sector.csv")
+```
+
+Agregar los anos por rama ofrece una lectura sectorial de la eficiencia
+relativa sobre la ventana comun 2018-2023.
+
+### Inferencia bootstrap (Simar-Wilson)
+
+Las eficiencias DEA son estimadores deterministas, sesgados hacia arriba y sin
+error estandar: la frontera estimada queda por dentro de la verdadera. Antes de
+cualquier lectura inferencial corregimos ese sesgo y construimos intervalos de
+confianza con el bootstrap suavizado de Simar & Wilson (1998), con reflexion en
+la frontera y correccion de media y varianza.
+
+```{python}
+boot = pd.read_csv("../outputs/tables/publication_table_ecuador_dea_bootstrap.csv")
+boot
+```
+
+La columna `efficiency_bias_corrected` es la eficiencia corregida por sesgo y
+`[ci_low, ci_high]` su intervalo de confianza al 95%. Que las DMU con
+eficiencia DEA igual a 1 reciban una correccion estrictamente menor que 1
+confirma el sesgo al alza esperado. Solo deben interpretarse como diferencias
+robustas de eficiencia aquellas cuyas bandas no se solapan.
+
+## Contexto de capital
+
+```{python}
+pd.read_csv("../outputs/tables/publication_table_ecuador_sector_capital_context.csv")
+```
+
+Esta tabla resume la FBKF promedio por rama armonizada. La FBKF entra al DEA de
+frontera de produccion como insumo de capital a nivel sector-ano; aqui se
+muestra ademas su promedio por rama como contexto descriptivo. En la salida
+actual, la cobertura efectiva de la FBKF armonizada llega hasta 2023, lo que
+define la ventana comun 2018-2023 del panel DEA.
+
+## Estado de exportaciones
+
+```{python}
+pd.read_csv("../outputs/tables/publication_table_ecuador_sector_exports_status.csv")
+```
+
+Las exportaciones aun no entran al DEA porque la evidencia oficial del BCE esta
+organizada por productos y por paises, no por una clasificacion de ramas
+equivalente a la particion ISIC de siete sectores. El pipeline ya esta
+preparado para incorporarlas como segundo producto: si se provee una serie
+verificada por rama en `data/raw/ecuador/sector_exports_by_branch.csv`
+(`factor`, `year`, `exports`) que cubra las siete ramas en la ventana del
+panel, `build_ecuador_sector_metrics.py` la agrega como `output_exports` y el
+DEA recalcula la regla de adecuacion (con 42 DMU admite hasta cuatro variables
+manteniendo el veredicto VALIDO). Mientras no exista ese correlacionador
+oficial, la compuerta permanece cerrada y el estado queda como
+`PENDIENTE_VERIFICAR`.
+
+# Discusion
+
+El HHI ofrece una lectura descriptiva mas estable cuando la particion sectorial
+es suficientemente fina. El DEA de frontera de produccion debe interpretarse
+con cautela: identifica posiciones relativas de eficiencia tecnica bajo
+rendimientos constantes a escala, no relaciones causales. Con 42 DMU el modelo
+satisface la regla de adecuacion, y la inferencia por bootstrap (Simar-Wilson)
+corrige el sesgo al alza y delimita intervalos de confianza, de modo que las
+comparaciones entre ramas se sostienen solo cuando sus bandas no se solapan.
+
+# Siguiente paso
+
+El siguiente paso es completar y verificar una base sectorial armonizada en
+`data/raw/ecuador/sector_comparable_metrics.csv` para incorporar empleo,
+productividad, exportaciones o formacion de capital con cobertura temporal y
+sectorial consistente. Hasta cerrar esa evidencia, cualquier fuente adicional
+debe tratarse como `PENDIENTE_VERIFICAR`.

@@ -1,0 +1,33 @@
+---
+title: "Companion Report: Ecuador HHI/DEA"
+format:
+  html:
+    toc: true
+execute:
+  echo: true
+  warning: false
+---
+
+# Project scope
+
+This companion report documents the Ecuador-only scope of the core report in
+`paper/replication_report.qmd`: HHI by ISIC branches, DEA by years, and DEA by
+economic branches.
+
+# Core files
+
+- `src/hhi.py`
+- `src/ecuador_hhi.py`
+- `src/ecuador_dea.py`
+- `src/ecuador_sector_dea.py`
+- `src/build_publication_tables.py`
+
+# Journal target
+
+Target journal: MLAJ.
+
+Latindex inclusion: `PENDIENTE_VERIFICAR`.
+
+# Integrity note
+
+Do not report any metric not present in `outputs/` or `paper/`.
